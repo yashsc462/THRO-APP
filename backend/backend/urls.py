@@ -22,5 +22,6 @@ from django.urls import path
 from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login',views.login,name = 'login'),
+    path('',views.login,name = 'login'),
+    path('dashboard/',views.dashboard,name = 'dashboard'),
 ]
