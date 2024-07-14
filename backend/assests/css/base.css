@@ -90,3 +90,7 @@ body {
 .sidebar.active + .flex-grow-1 {
   margin-left: 200px; /* Ensure the main content shifts correctly when the sidebar is active */
 }
+
+.container {
+  max-width: 100%;
+}

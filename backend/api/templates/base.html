@@ -14,19 +14,19 @@
         <div class="app-title">My App</div>
     </div>
     <div class="d-flex">
-        <div class="card sidebar" id="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="card-body">
                 <h2 class="card-title">My App</h2>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><a href="#">Home</a></li>
-                    <li class="list-group-item"><a href="#">About</a></li>
+                    <li class="list-group-item"><a href="{% url 'addVendor' %}">Vendor</a></li>
+                    <li class="list-group-item"><a href="{% url 'addCustomer' %}">Customer</a></li>
                     <li class="list-group-item"><a href="#">Services</a></li>
-                    <li class="list-group-item"><a href="#">Contact</a></li>
+                    <li class="list-group-item"><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </div>
         </div>
         <main class="flex-grow-1">
-            <div class="container mt-4">
+            <div class="container-fluid">
                 {% block content %}
                 {% endblock %}
             </div>

@@ -25,5 +25,8 @@ from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.login,name = 'login'),
-    path('dashboard/',views.dashboard,name = 'dashboard'),
+    path('dashboard',views.dashboard,name = 'dashboard'),
+    path('addVendor',views.addVendor,name = 'addVendor'),
+    path('addCustomer',views.addCustomer,name = 'addCustomer'),
+    path('logout/', views.logout, name='logout'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
