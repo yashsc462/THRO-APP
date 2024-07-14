@@ -1,0 +1,96 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #e0e6ed;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  z-index: 1;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.app-title {
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.d-flex {
+  display: flex;
+  margin-top: 3rem; /* Adjusted for the navbar height */
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #fff; /* Card background color */
+  color: #000; /* Card text color */
+  padding: 1rem;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  position: fixed; /* Fixes the position of the sidebar */
+  height: calc(100vh - 3rem); /* Ensures the sidebar takes specific height */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Card shadow */
+  border-radius: 0.25rem; /* Card border radius */
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  color: red;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem 0;
+}
+
+.sidebar ul li a {
+  color: blue;
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+  background-color: #f8f9fa;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+  margin-left: 200px; /* Adjusts the main content to leave space for sidebar */
+  transition: margin-left 0.3s ease; /* Smooth transition for margin adjustment */
+  padding-top: 3rem; /* Adjusted for the navbar height */
+}
+
+.sidebar.active + .flex-grow-1 {
+  margin-left: 200px; /* Ensure the main content shifts correctly when the sidebar is active */
+}
+
+.container {
+  max-width: 100%;
+}

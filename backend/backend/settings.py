@@ -144,9 +144,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_URL = [
-    os.path.join(BASE_DIR, 'static')
+    os.path.join(BASE_DIR, 'backend\\static')
 ]
-
+STATIC_ROOT = os.path.join(BASE_DIR,'assests')
 MEDIA_ROOT = os.path.join(BASE_DIR,)
 MEDIA_URL = "/media/"
 
