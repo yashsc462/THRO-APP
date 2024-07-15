@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        margin-bottom: 20px;
+    }
+    label {
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="text"], input[type="number"], select, input[type="file"] {
+        padding: 10px;
+        width: 100%;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    button {
+        padding: 10px 15px;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="container">
+    <div class="card-header">
+        <h2>Add Product</h2>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <label for="productId">Product ID:</label>
+            <input type="text" id="productId" name="productId" required>
+        </div>
+        <div>
+            <label for="productChoose">Product Choose:</label>
+            <select id="productChoose" name="productChoose">
+                <option value="NULL">NULL</option>
+                <option value="THRO">THRO</option>
+                <option value="F-PROTEKKT">F-PROTEKKT</option>
+                <option value="Vase">Vase</option>
+            </select>
+        </div>
+        <div>
+            <label for="productChoose1">Product Choose 1:</label>
+            <select id="productChoose1" name="productChoose1">
+                <option value="">---</option>
+                <option value="NULL">NULL</option>
+                <option value="THRO">THRO</option>
+                <option value="F-PROTEKKT">F-PROTEKKT</option>
+                <option value="Vase">Vase</option>
+            </select>
+        </div>
+        <div>
+            <label for="productNumber">Product Number:</label>
+            <input type="number" id="productNumber" name="productNumber" required>
+        </div>
+        <div>
+            <label for="productNumber1">Product Number 1:</label>
+            <input type="number" id="productNumber1" name="productNumber1" required>
+        </div>
+        <div>
+            <label for="productImage">Product Image:</label>
+            <input type="file" id="productImage" name="productImage" accept="image/*">
+        </div>
+        <div>
+            <label for="productFirstName">Product First Name:</label>
+            <input type="text" id="productFirstName" name="productFirstName" required>
+        </div>
+        <div>
+            <label for="productDescription">Product Description:</label>
+            <input type="text" id="productDescription" name="productDescription" required>
+        </div>
+        <div>
+            <label for="productattribute">Product Attribute:</label>
+            <input type="number" step="0.01" id="productattribute" name="productattribute" required>
+        </div>
+        <div>
+            <label for="productvalue">Product Value:</label>
+            <input type="number" id="productvalue" name="productvalue" step="0.01" required>
+        </div>
+        <button type="submit">Add Product</button>
+    </form>
+</div>
+
+<div id="message-popup" class="message-popup"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const messagePopup = document.getElementById("message-popup");
+    
+    {% if messages %}
+        let messages = "";
+        {% for message in messages %}
+            messages += "{{ message }}<br>";
+        {% endfor %}
+        messagePopup.innerHTML = messages;
+        messagePopup.style.display = 'block';
+        setTimeout(function() {
+            messagePopup.style.display = 'none';
+        }, 5000);
+    {% endif %}
+});
+</script>
+
+{% endblock %}

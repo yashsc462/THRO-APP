@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 95%;
+    /* margin: 50px auto; */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: white;
+}
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+    flex-basis: 100%; /* Ensure labels take full width of the flex container */
+}
+
+form .input-group {
+    display: flex;
+    flex-basis: 50%; /* Two fields per row */
+    margin-bottom: 15px;
+}
+
+form .input-group > * {
+    /* flex: 1; Each field within the input-group takes equal space */
+    margin-right: 10px; /* Adjust spacing between fields */
+}
+
+form .input-group:last-child {
+    margin-bottom: 0; /* Remove bottom margin for the last input group */
+}
+
+input[type="text"], select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%; /* Ensure inputs take full width */
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 150px;
+    align-self: center;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.button1 {
+    margin-top: 20%;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.message-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1000;
+}
+
+.message-popup.error {
+    background-color: #f44336;
+}
+
+.card-header {
+ background-color: #333;
+ color: #fff;
+ padding: 1%;
+ border-top-left-radius: -5%;
+ border-top-right-radius: -5%;
+ margin-bottom: 0%;
+}
+
+</style>
+
+<div class="container">
+    <div class="card-header">
+    <h2>Add Company</h2>
+    </div>
+
+    <form method="post" action="{% url 'addCompany' %}">
+        {% csrf_token %}
+        <div class="input-group">
+            <label for="companyName">Company Name:</label>
+            <input type="text" id="companyName" name="companyName" required>
+        </div>
+
+        <div class="input-group">
+            <label for="companyAddress">Company Address:</label>
+            <input type="text" id="companyAddress" name="companyAddress" required>
+        </div>
+
+        <div class="input-group">
+            <label for="companyGstNumber">Company GST Number:</label>
+            <input type="text" id="companyGstNumber" name="companyGstNumber" required>
+        </div>
+
+        <div class="input-group">
+            <label for="companyPhoneNumber">Company Phone Number:</label>
+            <input type="text" id="companyPhoneNumber" name="companyPhoneNumber" required>
+        </div>
+
+        <div class="input-group">
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" required>
+        </div>
+
+        <div class="input-group">
+            <label for="state">State:</label>
+            <select id="state" name="state" required>
+                <option value="">Select State</option>
+                <option value="AN">Andaman and Nicobar Islands</option>
+                <option value="AP">Andhra Pradesh</option>
+                <option value="AR">Arunachal Pradesh</option>
+                <!-- Add more states as needed -->
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="pincode">Pincode:</label>
+            <input type="text" id="pincode" name="pincode" required>
+        </div>
+        <div>
+        <button type="submit">Add Company</button></div>
+    </form>
+</div>
+
+<div id="message-popup" class="message-popup"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const messagePopup = document.getElementById("message-popup");
+    
+    {% if messages %}
+        let messages = "";
+        {% for message in messages %}
+            messages += "{{ message }}<br>";
+        {% endfor %}
+        messagePopup.innerHTML = messages;
+        messagePopup.style.display = 'block';
+        setTimeout(function() {
+            messagePopup.style.display = 'none';
+        }, 5000);
+    {% endif %}
+});
+</script>
+
+{% endblock %}

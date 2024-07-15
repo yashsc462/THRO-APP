@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .container {
+        max-width: 95%;
+        margin: 20px auto; /* Center align and add spacing */
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: white;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px; /* Spacing between heading and table */
+    }
+
+    th, td {
+        padding: 12px 15px; /* Adjusted padding for better spacing */
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        color: #333;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+
+.card-header {
+ background-color: #333;
+ color: #fff;
+ padding: 1%;
+ border-top-left-radius: -5%;
+ border-top-right-radius: -5%;
+ margin-bottom: 0%;
+}
+
+</style>
+
+<div class="container">
+    <div class="card-header">
+    <h2>Vendor List</h2>
+</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Vendor Name</th>
+                <th>Address</th>
+                <th>GST Number</th>
+                <th>Phone Number</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Pincode</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in vendors %}
+            <tr>
+                <td>{{ vendor.vendorName }}</td>
+                <td>{{ vendor.vendorAddress }}</td>
+                <td>{{ vendor.vendorGstNumber }}</td>
+                <td>{{ vendor.vendorPhoneNumber }}</td>
+                <td>{{ vendor.city }}</td>
+                <td>{{ vendor.state }}</td>
+                <td>{{ vendor.pincode }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

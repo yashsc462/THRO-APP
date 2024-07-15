@@ -3,84 +3,208 @@
 {% block content %}
 <style>
     body {
-        margin: 0;
         font-family: Arial, sans-serif;
-        background-color: #e0e6ed;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
     }
 
-    .card-vendor {
-        width: 100%;
-        margin-top: 50px;
+    .container {
+        max-width: 95%;
+        margin: 20px auto; /* Center the container */
+    }
+
+    .input-container {
+        background-color: #fff;
         padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        color: white;
+        background-color: #333;
+        padding: 10px;
+        margin-top: 0;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    form {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    form label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+        flex-basis: 100%;
+    }
+
+    form .input-group {
+        display: flex;
+        flex-basis: 50%; /* Two fields per row */
+        margin-bottom: 15px;
+    }
+
+    form .input-group > * {
+        /* flex: 1; Each field within the input-group takes equal space */
+        margin-right: 10px; /* Adjust spacing between fields */
+    }
+
+    form .input-group:last-child {
+        margin-bottom: 0; /* Remove bottom margin for the last input group */
+    }
+
+    input[type="text"], select {
+        padding: 10px;
         border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        width: 100%; /* Ensure inputs take full width */
+    }
+
+    button {
+        padding: 10px; /* Adjusted padding for the button */
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 20%; /* 20% of the input-container width */
+        margin-top: 50px; /* Space between Pincode and button */
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .message-popup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4caf50;
+        color: white;
+        padding: 15px;
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: none;
+        z-index: 1000;
     }
+
+    .message-popup.error {
+        background-color: #f44336;
+    }
+
 </style>
 
+<div class="container">
+    <h1>Add Vendor</h1>
 
+    <div class="input-container">
+        <form method="post" action="{% url 'addVendor' %}">
+            {% csrf_token %}
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card-vendor">
-                <h1 class="card-title">Add Vendor</h1>
-                <form id="addVendorForm" action="{% url 'addVendor' %}" method="post">
-                    {% csrf_token %}
-                    
-                    <label for="vendorName">Vendor Name:</label>
-                    <input type="text" id="vendorName" name="vendorName" maxlength="100" required class="form-control"><br>
-                    
-                    <label for="vendorAddress">Vendor Address:</label>
-                    <input type="text" id="vendorAddress" name="vendorAddress" maxlength="200" required class="form-control"><br>
-                    
-                    <label for="vendorGstNumber">Vendor GST Number:</label>
-                    <input type="text" id="vendorGstNumber" name="vendorGstNumber" maxlength="50" required class="form-control"><br>
-                    
-                    <label for="vendorPhoneNumber">Vendor Phone Number:</label>
-                    <input type="number" id="vendorPhoneNumber" name="vendorPhoneNumber" maxlength="20" required class="form-control"><br>
-                    
-                    <button type="submit" class="btn btn-primary">Save Vendor</button>
-                </form>
+            <div class="input-group">
+                <label for="vendorName">Vendor Name:</label>
+                <input type="text" id="vendorName" name="vendorName" required>
             </div>
-        </div>
+
+            <div class="input-group">
+                <label for="vendorAddress">Vendor Address:</label>
+                <input type="text" id="vendorAddress" name="vendorAddress" required>
+            </div>
+
+            <div class="input-group">
+                <label for="vendorGstNumber">Vendor GST Number:</label>
+                <input type="text" id="vendorGstNumber" name="vendorGstNumber" required>
+            </div>
+
+            <div class="input-group">
+                <label for="vendorPhoneNumber">Vendor Phone Number:</label>
+                <input type="text" id="vendorPhoneNumber" name="vendorPhoneNumber" required>
+            </div>
+
+            <div class="input-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+
+            <div class="input-group">
+                <label for="state">State:</label>
+                <select id="state" name="state" required>
+                    <option value="">Select State</option>
+                    <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Chandigarh">Chandigarh</option>
+                    <option value="CT">Chhattisgarh</option>
+                    <option value="DL">Delhi</option>
+                    <option value="GA">Goa</option>
+                    <option value="GJ">Gujarat</option>
+                    <option value="HR">Haryana</option>
+                    <option value="HP">Himachal Pradesh</option>
+                    <option value="JK">Jammu and Kashmir</option>
+                    <option value="JH">Jharkhand</option>
+                    <option value="KA">Karnataka</option>
+                    <option value="KL">Kerala</option>
+                    <option value="LA">Ladakh</option>
+                    <option value="LD">Lakshadweep</option>
+                    <option value="MP">Madhya Pradesh</option>
+                    <option value="MH">Maharashtra</option>
+                    <option value="MN">Manipur</option>
+                    <option value="ML">Meghalaya</option>
+                    <option value="MZ">Mizoram</option>
+                    <option value="NL">Nagaland</option>
+                    <option value="OR">Odisha</option>
+                    <option value="PY">Puducherry</option>
+                    <option value="PB">Punjab</option>
+                    <option value="RJ">Rajasthan</option>
+                    <option value="SK">Sikkim</option>
+                    <option value="TN">Tamil Nadu</option>
+                    <option value="TG">Telangana</option>
+                    <option value="TR">Tripura</option>
+                    <option value="UP">Uttar Pradesh</option>
+                    <option value="UT">Uttarakhand</option>
+                    <option value="WB">West Bengal</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="pincode">Pincode:</label>
+                <input type="text" id="pincode" name="pincode" required>
+            </div>
+
+            <button type="submit">Add Vendor</button>
+        </form>
     </div>
 </div>
 
-    
+<div id="message-popup" class="message-popup"></div>
 
-    <script>
-        document.getElementById('addVendorForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting normally
-            
-            // Collect form data
-            let formData = new FormData(this);
-            
-            // Submit the form using fetch API
-            fetch(this.action, {
-                method: this.method,
-                body: formData,
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Handle JSON response
-                if (data.success) {
-                    alert('Vendor added successfully!'); // Replace with your preferred success notification (e.g., modal)
-                    // Reset form if needed
-                    this.reset();
-                } else {
-                    alert('Failed to add vendor. Please check your input.'); // Replace with your preferred error notification
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again later.'); // Replace with your preferred error handling
-            });
-        });
-    </script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const messagePopup = document.getElementById("message-popup");
+    
+    {% if messages %}
+        let messages = "";
+        {% for message in messages %}
+            messages += "{{ message }}<br>";
+        {% endfor %}
+        messagePopup.innerHTML = messages;
+        messagePopup.style.display = 'block';
+        setTimeout(function() {
+            messagePopup.style.display = 'none';
+        }, 5000);
+    {% endif %}
+});
+</script>
+
 {% endblock %}

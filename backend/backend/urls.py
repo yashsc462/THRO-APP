@@ -28,5 +28,10 @@ urlpatterns = [
     path('dashboard',views.dashboard,name = 'dashboard'),
     path('addVendor',views.addVendor,name = 'addVendor'),
     path('addCustomer',views.addCustomer,name = 'addCustomer'),
+    path('addCompany',views.addCompany,name = 'addCompany'),
     path('logout/', views.logout, name='logout'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('vendorList/', views.vendorList, name='vendorList'),
+    path('addProduct/', views.addProduct, name='addProduct'),
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

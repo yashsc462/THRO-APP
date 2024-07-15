@@ -13,10 +13,11 @@ body {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
+  padding-top: 1%;
   z-index: 1;
 }
 
-.toggle-btn {
+.toggle-sidebar {
   background: none;
   border: none;
   color: white;
@@ -82,7 +83,7 @@ body {
 
 .flex-grow-1 {
   flex-grow: 1;
-  margin-left: 200px; /* Adjusts the main content to leave space for sidebar */
+  /* margin-left: 200px; Adjusts the main content to leave space for sidebar */
   transition: margin-left 0.3s ease; /* Smooth transition for margin adjustment */
   padding-top: 3rem; /* Adjusted for the navbar height */
 }
