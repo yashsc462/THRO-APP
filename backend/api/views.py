@@ -8,6 +8,10 @@ from django.http import HttpResponse,JsonResponse
 from .models import Vendor,Customer,Company,Product
 
 
+
+def landingpage(request):
+    return render(request, 'landingpage.html') 
+
 def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -159,48 +163,37 @@ def vendorList(request):
     vendors = Vendor.objects.all()
     return render(request, 'vendorList.html', {'vendors': vendors})
 
+from django.shortcuts import render, redirect
+from django.views.decorators.http import require_POST
+from .models import Product
+
 def addProduct(request):
     if request.method == 'POST':
-        # Extract form data from POST request
-        productId = request.POST.get('productId')
-        productImage = request.FILES.get('productImage')
-        productFirstName = request.POST.get('productFirstName')
-        productDescription = request.POST.get('productDescription')
-        productvalue = request.POST.get('productvalue')
-        productattribute = request.POST.get('productattribute')
-        productChoose = request.POST.get('productChoose')
-        productChoose1 = request.POST.get('productChoose1')
-        productNumber = request.POST.get('productNumber')
-        productNumber1 = request.POST.get('productNumber1')
+        product_id = request.POST.get('productId')
+        product_type = request.POST.get('productType')
+        description = request.POST.get('description')
+        count = request.POST.get('count')
+        price = request.POST.get('price')
+        vase_type = request.POST.get('vaseType')
+        vase_count = request.POST.get('vaseCountInput')
 
-        # Create new Product instance
-        try:
-            Product.objects.create(
-                productId = productId,
-                productImage=productImage,
-                productFirstName=productFirstName,
-                productDescription=productDescription,
-                productvalue=productvalue,
-                productattribute=productattribute,
-                productChoose=productChoose,
-                productChoose1=productChoose1,
-                productNumber=productNumber,
-                productNumber1=productNumber1
-            )
-        
-            # Redirect to a success page or back to the addProduct page
-            return redirect('addProduct')  # Redirects to the same page after form submission
+        # Create a new Product object and save to database
+        product = Product(
+            product_id=product_id,
+            product_type=product_type,
+            description=description,
+            count=count,
+            price=price,
+            vase_type=vase_type,
+            vase_count=vase_count
+        )
+        product.save()
 
-        except Exception as e:
-            # Handle any exceptions, such as validation errors or database errors
-            # You can add error handling logic here or log the exception
-            print(f"Error saving product: {e}")
-            # Optionally, you can render an error message to the user
-            return render(request, 'addProduct.html', {'error_message': 'Failed to add product. Please try again.'})
+        # Redirect to a success page or wherever you want
+        return redirect('addProduct')  # Replace 'success_page' with your actual URL name
 
-    else:
-        # If request method is not POST, render the form page
-        return render(request, 'addProduct.html')
+    # Render the form initially or on GET request
+    return render(request, 'addProduct.html')
 
 
 

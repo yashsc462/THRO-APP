@@ -24,7 +24,8 @@ from django.conf import settings
 from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.login,name = 'login'),
+    path('',views.landingpage,name = 'landingpage'),
+    path('login',views.login,name = 'login'),
     path('dashboard',views.dashboard,name = 'dashboard'),
     path('addVendor',views.addVendor,name = 'addVendor'),
     path('addCustomer',views.addCustomer,name = 'addCustomer'),

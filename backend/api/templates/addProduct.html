@@ -2,136 +2,251 @@
 
 {% block content %}
 <style>
+    .input-group {
+        margin-bottom: 15px;
+    }
+    .hidden {
+        display: none;
+    }
     body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f9;
         margin: 0;
         padding: 0;
     }
+
     .container {
-        max-width: 800px;
+        max-width: 95%;
         margin: 20px auto;
         padding: 20px;
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
     .card-header {
-        background-color: #007bff;
-        color: white;
+        background-color: #333;
+        color: #fff;
         padding: 10px;
-        text-align: center;
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
-        margin-bottom: 20px;
-    }
-    label {
-        font-weight: bold;
-        color: #555;
-    }
-    input[type="text"], input[type="number"], select, input[type="file"] {
-        padding: 10px;
-        width: 100%;
         margin-bottom: 15px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .input-group input,
+    .input-group select {
+        width: calc(100% - 20px);
+        padding: 8px;
+        font-size: 14px;
         border: 1px solid #ccc;
         border-radius: 4px;
-        font-size: 16px;
     }
-    button {
-        padding: 10px 15px;
-        background-color: #007bff;
+
+    .input-group select {
+        cursor: pointer;
+    }
+
+    .input-group .hidden {
+        display: none;
+    }
+
+    .btn-submit {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
         border: none;
         border-radius: 4px;
-        color: white;
-        font-size: 16px;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-        width: 100%;
+        font-size: 16px;
+        margin-left: 45%;
     }
-    button:hover {
-        background-color: #0056b3;
+
+    .btn-submit:hover {
+        background-color: #555;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    h2 {
+        text-align: center;
+        color: white;
+        background-color: #333;
+        padding: 10px;
+        margin-top: 0;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
     }
 </style>
-
+</head>
+<body>
 <div class="container">
     <div class="card-header">
         <h2>Add Product</h2>
     </div>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div>
-            <label for="productId">Product ID:</label>
-            <input type="text" id="productId" name="productId" required>
-        </div>
-        <div>
-            <label for="productChoose">Product Choose:</label>
-            <select id="productChoose" name="productChoose">
-                <option value="NULL">NULL</option>
-                <option value="THRO">THRO</option>
-                <option value="F-PROTEKKT">F-PROTEKKT</option>
-                <option value="Vase">Vase</option>
-            </select>
-        </div>
-        <div>
-            <label for="productChoose1">Product Choose 1:</label>
-            <select id="productChoose1" name="productChoose1">
-                <option value="">---</option>
-                <option value="NULL">NULL</option>
-                <option value="THRO">THRO</option>
-                <option value="F-PROTEKKT">F-PROTEKKT</option>
-                <option value="Vase">Vase</option>
-            </select>
-        </div>
-        <div>
-            <label for="productNumber">Product Number:</label>
-            <input type="number" id="productNumber" name="productNumber" required>
-        </div>
-        <div>
-            <label for="productNumber1">Product Number 1:</label>
-            <input type="number" id="productNumber1" name="productNumber1" required>
-        </div>
-        <div>
-            <label for="productImage">Product Image:</label>
-            <input type="file" id="productImage" name="productImage" accept="image/*">
-        </div>
-        <div>
-            <label for="productFirstName">Product First Name:</label>
-            <input type="text" id="productFirstName" name="productFirstName" required>
-        </div>
-        <div>
-            <label for="productDescription">Product Description:</label>
-            <input type="text" id="productDescription" name="productDescription" required>
-        </div>
-        <div>
-            <label for="productattribute">Product Attribute:</label>
-            <input type="number" step="0.01" id="productattribute" name="productattribute" required>
-        </div>
-        <div>
-            <label for="productvalue">Product Value:</label>
-            <input type="number" id="productvalue" name="productvalue" step="0.01" required>
-        </div>
-        <button type="submit">Add Product</button>
-    </form>
+    <div class="card-body">
+        <form id="productForm" method="post" action="{% url 'addProduct' %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="productId">Product ID:</label>
+                <input type="text" id="productId" name="productId" required>
+            </div>
+
+            <div class="input-group">
+                <label for="productType">Product Type:</label>
+                <select id="productType" name="productType" required onchange="toggleFields()">
+                    <option value="">Select Product Type</option>
+                    <option value="THRO">THRO</option>
+                    <option value="VASE">VASE</option>
+                    <option value="F-PROTEKKET">F-PROTEKKET</option>
+                </select>
+            </div>
+
+            <div id="descriptionFields" class="input-group hidden">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description">
+            </div>
+
+            <div id="countField" class="input-group hidden">
+                <label for="count">Count:</label>
+                <input type="number" id="count" name="count">
+            </div>
+
+            <div id="priceField" class="input-group hidden">
+                <label for="price">Price:</label>
+                <input type="text" id="price" name="price">
+            </div>
+
+            <div id="vaseOptions" class="input-group hidden">
+                <label for="vaseType">Vase Type:</label>
+                <select id="vaseType" name="vaseType" onchange="toggleVaseFields()">
+                    <option value="no">No Vase</option>
+                    <option value="yes">With Vase</option>
+                </select>
+                <div id="vaseCount" class="hidden">
+                    <label for="vaseCountInput">Count of Vase:</label>
+                    <input type="number" id="vaseCountInput" name="vaseCountInput">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Add Product</button>
+        </form>
+    </div>
 </div>
 
-<div id="message-popup" class="message-popup"></div>
-
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const messagePopup = document.getElementById("message-popup");
-    
-    {% if messages %}
-        let messages = "";
-        {% for message in messages %}
-            messages += "{{ message }}<br>";
-        {% endfor %}
-        messagePopup.innerHTML = messages;
-        messagePopup.style.display = 'block';
-        setTimeout(function() {
-            messagePopup.style.display = 'none';
-        }, 5000);
-    {% endif %}
-});
+    function toggleFields() {
+        const productType = document.getElementById("productType").value;
+        const descriptionFields = document.getElementById("descriptionFields");
+        const countField = document.getElementById("countField");
+        const priceField = document.getElementById("priceField");
+        const vaseOptions = document.getElementById("vaseOptions");
+        const vaseCount = document.getElementById("vaseCount");
+        const vaseCountInput = document.getElementById("vaseCountInput");
+
+        descriptionFields.classList.add("hidden");
+        countField.classList.add("hidden");
+        priceField.classList.add("hidden");
+        vaseOptions.classList.add("hidden");
+
+        // Reset vase count input field when changing product type
+        vaseCountInput.value = '';
+        vaseCount.classList.add("hidden");
+
+        if (productType === "THRO" || productType === "VASE" || productType === "F-PROTEKKET") {
+            descriptionFields.classList.remove("hidden");
+            countField.classList.remove("hidden");
+            priceField.classList.remove("hidden");
+
+            if (productType === "THRO" || productType === "VASE") {
+                vaseOptions.classList.remove("hidden");
+                toggleVaseFields(); // Ensure vase related fields toggle correctly
+            }
+        }
+    }
+
+    function toggleVaseFields() {
+        const vaseType = document.getElementById("vaseType").value;
+        const vaseCount = document.getElementById("vaseCount");
+        const vaseCountInput = document.getElementById("vaseCountInput");
+
+        vaseCount.classList.add("hidden");
+
+        if (vaseType === "yes") {
+            vaseCount.classList.remove("hidden");
+        }
+    }
+
+    document.getElementById("productForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the form from submitting in the traditional way
+
+        // Get CSRF token from the cookie (Django's default)
+        const csrftoken = getCookie('csrftoken');
+
+        // Get form data
+        const formData = new FormData(this);
+
+        // Remove vaseCountInput from formData if vaseType is "no"
+        const vaseType = formData.get('vaseType');
+        if (vaseType === "no") {
+            formData.delete('vaseCountInput');
+        }
+
+        // Example AJAX request using fetch API
+        fetch("{% url 'addProduct' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrftoken // Pass CSRF token in headers
+            },
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // Assuming server returns JSON response
+        })
+        .then(data => {
+            console.log('Success:', data);
+            // Handle success response here (e.g., show success message, redirect)
+            // Example:
+            // window.location.href = '/success-page/';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle error (e.g., show error message to user)
+        });
+    });
+
+    // Function to get CSRF token from cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
+</body>
 
 {% endblock %}
