@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}VPO{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="vendor">Vendor:</label>
+    <select name="vendor" id="vendor">
+        {% for vendor in vendors %}
+            <option value="{{ vendor.vendor_id }}">{{ vendor.vendorName }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="serial_num">Serial Number:</label>
+    <input type="number" name="serial_num" id="serial_num" required>
+
+    <label for="product">Product:</label>
+    <select name="product" id="product">
+        {% for product in products %}
+            <option value="{{ product.product_id }}">{{ product.description }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="UOM">Unit of Measure:</label>
+    <input type="text" name="UOM" id="UOM" required>
+
+    <label for="QTY">Quantity:</label>
+    <input type="number" name="QTY" id="QTY" required>
+
+    <label for="Rate">Rate:</label>
+    <input type="number" step="0.01" name="Rate" id="Rate">
+
+    <label for="total">Total:</label>
+    <input type="number" step="0.01" name="total" id="total">
+
+    <label for="discount">Discount:</label>
+    <input type="number" name="discount" id="discount">
+
+    <label for="transportation">Transportation:</label>
+    <input type="number" name="transportation" id="transportation">
+
+    <label for="total_taxable_amount">Total Taxable Amount:</label>
+    <input type="number" name="total_taxable_amount" id="total_taxable_amount">
+
+    <label for="gst">GST:</label>
+    <input type="number" name="gst" id="gst">
+
+    <label for="total_amount">Total Amount:</label>
+    <input type="number" name="total_amount" id="total_amount">
+
+    <label for="proforma_invoice">Proforma Invoice:</label>
+    <input type="file" name="proforma_invoice" id="proforma_invoice">
+
+    <button type="submit">Create VPO</button>
+</form>
+{% endblock %}

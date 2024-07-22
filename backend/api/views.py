@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout as auth_logout
 from django.contrib.auth.models import User  
 from django.http import HttpResponse,JsonResponse
-from .models import Vendor,Customer,Company,Product
+from .models import Vendor,Customer,Company,Product,VPO
 
 
 
@@ -57,6 +57,7 @@ from django.contrib import messages
 
 def addVendor(request):
     if request.method == 'POST':
+        vendor_id = request.POST.get('vendor_id')
         vendor_name = request.POST.get('vendorName')
         vendor_address = request.POST.get('vendorAddress')
         vendor_gst_number = request.POST.get('vendorGstNumber')
@@ -66,12 +67,13 @@ def addVendor(request):
         pincode = request.POST.get('pincode')
 
         # Checking of the valid data
-        if not vendor_name or not vendor_address or not vendor_gst_number or not vendor_phone_number or not city or not state or not pincode:
+        if not vendor_id or not vendor_name or not vendor_address or not vendor_gst_number or not vendor_phone_number or not city or not state or not pincode:
             messages.error(request, 'All fields are required.')
             return redirect('addVendor')
         
         try:
             Vendor.objects.create(
+                vendor_id = vendor_id,
                 vendorName=vendor_name,
                 vendorAddress=vendor_address,
                 vendorGstNumber=vendor_gst_number,
@@ -196,6 +198,51 @@ def addProduct(request):
     return render(request, 'addProduct.html')
 
 
+def vpo(request):
+    if request.method == 'POST':
+        # Retrieve form data from POST request
+        vendor_id = request.POST.get('vendor')
+        serial_num = request.POST.get('serial_num')
+        product_id = request.POST.get('product')
+        UOM = request.POST.get('UOM')
+        QTY = request.POST.get('QTY')
+        rate = request.POST.get('Rate')
+        total = request.POST.get('total')
+        discount = request.POST.get('discount')
+        transportation = request.POST.get('transportation')
+        total_taxable_amount = request.POST.get('total_taxable_amount')
+        gst = request.POST.get('gst')
+        total_amount = request.POST.get('total_amount')
+        proforma_invoice = request.FILES.get('proforma_invoice') if 'proforma_invoice' in request.FILES else None
+        
+        # Retrieve vendor and product objects from their models
+        vendor = Vendor.objects.get(vendor_id=vendor_id)
+        product = Product.objects.get(product_id=product_id)
 
+        # Create and save VPO object
+        vpo = VPO(
+            vendor=vendor,
+            serial_num=serial_num,
+            product=product,
+            UOM=UOM,
+            QTY=QTY,
+            rate=rate,
+            total=total,
+            discount=discount,
+            transportation=transportation,
+            total_taxable_amount=total_taxable_amount,
+            gst=gst,
+            total_amount=total_amount,
+            proforma_invoice=proforma_invoice
+        )
+        vpo.save()
+
+        return HttpResponse('VPO created successfully!')  # Or redirect to a success page
+    else:
+        # Fetch all vendors and products for the initial form load
+        vendors = Vendor.objects.all()
+        products = Product.objects.all()
+        context = {'vendors': vendors, 'products': products}
+        return render(request, 'vpo.html', context)
 
 

@@ -6,6 +6,7 @@ from django.db import models
 
 
 class Vendor(models.Model):
+    vendor_id = models.CharField(max_length=10)
     STATES_CHOICES = [
         ('AN', 'Andaman and Nicobar Islands'),
         ('AP', 'Andhra Pradesh'),
@@ -134,6 +135,37 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
+    
+
+
+class VPO(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    serial_num = models.IntegerField()
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    UOM = models.CharField(max_length=50)
+    QTY = models.IntegerField(default=0)
+    rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    discount = models.IntegerField(default=0)
+    transportation = models.IntegerField(default=0)
+    total_taxable_amount = models.IntegerField(default=0)
+    gst = models.IntegerField(default=0)
+    total_amount = models.IntegerField(default=0)
+    proforma_invoice = models.FileField(upload_to='media/')
+
+    def __str__(self):
+        return f'VPO {self.serial_num} - {self.vendor.name}'
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 
 

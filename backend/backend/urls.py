@@ -33,6 +33,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('vendorList/', views.vendorList, name='vendorList'),
     path('addProduct/', views.addProduct, name='addProduct'),
+    path('vpo/', views.vpo, name='vpo'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
