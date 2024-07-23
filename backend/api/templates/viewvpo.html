@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}VPO List{% endblock %}
+
+{% block content %}
+
+<style>
+    .container {
+        max-width: 95%;
+        margin: 20px auto; /* Center align and add spacing */
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: white;
+        background-color: #333;
+        padding: 10px;
+        margin-top: 0;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px; /* Spacing between heading and table */
+    }
+
+    th, td {
+        padding: 12px 15px; /* Adjusted padding for better spacing */
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        color: #333;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+
+<div class="container">
+    <h1>VPO List</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Vendor ID</th>
+                <th>Vendor Name</th>
+                <th>Bill Number</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows (to be dynamically populated based on your data) -->
+            <tr>
+                <td>123</td> <!-- Example data -->
+                <td>ABC Corporation</td> <!-- Example data -->
+                <td>BILL-001</td> <!-- Example data -->
+                <td>2024-07-23</td> <!-- Example data -->
+                <td>$500.00</td> <!-- Example data -->
+                <td><a href="#">View</a> </td> <!-- Example actions -->
+            </tr>
+            <tr>
+                <td>456</td> <!-- Example data -->
+                <td>XYZ Supplies</td> <!-- Example data -->
+                <td>BILL-002</td> <!-- Example data -->
+                <td>2024-07-24</td> <!-- Example data -->
+                <td>$750.00</td> <!-- Example data -->
+                <td><a href="#">View</a> </td> <!-- Example actions -->
+            </tr>
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

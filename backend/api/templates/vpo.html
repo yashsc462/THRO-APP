@@ -3,55 +3,272 @@
 {% block title %}VPO{% endblock %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label for="vendor">Vendor:</label>
-    <select name="vendor" id="vendor">
-        {% for vendor in vendors %}
-            <option value="{{ vendor.vendor_id }}">{{ vendor.vendorName }}</option>
-        {% endfor %}
-    </select>
 
-    <label for="serial_num">Serial Number:</label>
-    <input type="number" name="serial_num" id="serial_num" required>
+<style>
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
 
-    <label for="product">Product:</label>
-    <select name="product" id="product">
-        {% for product in products %}
-            <option value="{{ product.product_id }}">{{ product.description }}</option>
-        {% endfor %}
-    </select>
+/* Form Container */
+.container {
+    background: #fff;
+    max-width: 95%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-    <label for="UOM">Unit of Measure:</label>
-    <input type="text" name="UOM" id="UOM" required>
+/* Form Elements */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
 
-    <label for="QTY">Quantity:</label>
-    <input type="number" name="QTY" id="QTY" required>
+input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
 
-    <label for="Rate">Rate:</label>
-    <input type="number" step="0.01" name="Rate" id="Rate">
+input[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
 
-    <label for="total">Total:</label>
-    <input type="number" step="0.01" name="total" id="total">
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
 
-    <label for="discount">Discount:</label>
-    <input type="number" name="discount" id="discount">
+button:hover {
+    background-color: #0056b3;
+}
 
-    <label for="transportation">Transportation:</label>
-    <input type="number" name="transportation" id="transportation">
+button:focus {
+    outline: none;
+}
 
-    <label for="total_taxable_amount">Total Taxable Amount:</label>
-    <input type="number" name="total_taxable_amount" id="total_taxable_amount">
+/* Product Rows */
+.product-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fafafa;
+}
 
-    <label for="gst">GST:</label>
-    <input type="number" name="gst" id="gst">
+/* Field Styling for Side-by-Side Layout */
+.product-row > div {
+    flex: 1 1 calc(16.66% - 10px); /* 6 columns layout */
+    box-sizing: border-box;
+}
 
-    <label for="total_amount">Total Amount:</label>
-    <input type="number" name="total_amount" id="total_amount">
+.product-row label {
+    display: block;
+    margin-bottom: 5px;
+}
 
-    <label for="proforma_invoice">Proforma Invoice:</label>
-    <input type="file" name="proforma_invoice" id="proforma_invoice">
+.product-row input,
+.product-row select {
+    width: 100%;
+}
 
-    <button type="submit">Create VPO</button>
-</form>
+/* Add Row Button */
+button.add-row {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button.add-row:hover {
+    background-color: #218838;
+}
+
+/* Summary Section */
+.summary {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+.summary label {
+    display: inline-block;
+    width: 200px;
+}
+
+.summary input {
+    width: calc(100% - 220px);
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+input#total_taxable_amount,
+input#total_amount {
+    font-weight: bold;
+}
+
+input#gst {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+</style>
+
+<div class="container">
+    <form method="post" id="vpo-form">
+        {% csrf_token %}
+        <label for="vendor">Vendor:</label>
+        <select name="vendor" id="vendor">
+            {% for vendor in vendors %}
+                <option value="{{ vendor.vendor_id }}">{{ vendor.vendorName }}</option>
+            {% endfor %}
+        </select>
+
+        <div id="product-rows">
+            <div class="product-row">
+                <div>
+                    <label for="product">Product:</label>
+                    <select name="product" class="product" onchange="updateRate(this)">
+                        <option value="">Select product</option>
+                        {% for product in products %}
+                            <option value="{{ product.product_id }}" data-price="{{ product.price }}">{{ product.description }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="serial_num">Serial Number:</label>
+                    <input type="number" name="serial_num" class="serial_num" required>
+                </div>
+                
+                <div>
+                    <label for="UOM">Unit of Measure:</label>
+                    <input type="text" name="UOM" class="UOM" required>
+                </div>
+                <div>
+                    <label for="QTY">Quantity:</label>
+                    <input type="number" name="QTY" class="QTY" oninput="updateTotal(this)" required>
+                </div>
+                <div>
+                    <label for="Rate">Rate:</label>
+                    <input type="number" name="Rate" class="Rate" readonly>
+                </div>
+                <div>
+                    <label for="total">Total:</label>
+                    <input type="number" name="total" class="total" readonly>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="add-row" onclick="addRow()">Add Row</button>
+
+        <div class="summary">
+            <label for="discount">Discount:</label>
+            <input type="number" name="discount" id="discount" required>
+
+            <label for="transportation">Transportation:</label>
+            <input type="number" name="transportation" id="transportation" required>
+
+            <label for="total_taxable_amount">Total Taxable Amount:</label>
+            <input type="number" name="total_taxable_amount" id="total_taxable_amount" readonly>
+
+            <label for="gst">GST:</label>
+            <input type="number" name="gst" id="gst" value="18" readonly>
+
+            <label for="total_amount">Total Amount:</label>
+            <input type="number" name="total_amount" id="total_amount" readonly>
+        </div>
+
+        <button type="submit">Create VPO</button>
+    </form>
+</div>
+
+<script>
+    function updateRate(selectElement) {
+        var price = selectElement.options[selectElement.selectedIndex].dataset.price;
+        var row = selectElement.closest('.product-row');
+        var rateInput = row.querySelector('.Rate');
+        rateInput.value = price;
+        updateTotal(row.querySelector('.QTY'));
+    }
+
+    function updateTotal(quantityInput) {
+        var row = quantityInput.closest('.product-row');
+        var rate = parseFloat(row.querySelector('.Rate').value) || 0;
+        var quantity = parseFloat(quantityInput.value) || 0;
+        var total = rate * quantity;
+        row.querySelector('.total').value = total;
+        updateSummary();
+    }
+
+    function addRow() {
+        var container = document.getElementById('product-rows');
+        var row = container.querySelector('.product-row').cloneNode(true);
+        row.querySelector('.serial_num').value = '';
+        row.querySelector('.product').value = '';
+        row.querySelector('.product').dispatchEvent(new Event('change'));
+        row.querySelector('.UOM').value = '';
+        row.querySelector('.QTY').value = '';
+        row.querySelector('.Rate').value = '';
+        row.querySelector('.total').value = '';
+        container.appendChild(row);
+    }
+
+    function updateSummary() {
+        var rows = document.querySelectorAll('.product-row');
+        var totalTaxableAmount = 0;
+
+        rows.forEach(function(row) {
+            var total = parseFloat(row.querySelector('.total').value) || 0;
+            totalTaxableAmount += total;
+        });
+
+        var discount = parseFloat(document.getElementById('discount').value) || 0;
+        var transportation = parseFloat(document.getElementById('transportation').value) || 0;
+        var gst = 18;  // Hardcoded GST value
+
+        // Calculate total taxable amount
+        var discountAmount = totalTaxableAmount * (discount / 100);
+        var taxableAmount = totalTaxableAmount - discountAmount + transportation;
+        document.getElementById('total_taxable_amount').value = taxableAmount.toFixed(2);
+
+        // Calculate total amount
+        var gstAmount = taxableAmount * (gst / 100);
+        var totalAmount = taxableAmount + gstAmount;
+        document.getElementById('total_amount').value = totalAmount.toFixed(2);
+    }
+
+    document.getElementById('vpo-form').addEventListener('input', function(event) {
+        if (event.target.matches('.QTY, .product, #discount, #transportation')) {
+            updateSummary();
+        }
+    });
+</script>
+
 {% endblock %}

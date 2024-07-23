@@ -34,6 +34,8 @@ urlpatterns = [
     path('vendorList/', views.vendorList, name='vendorList'),
     path('addProduct/', views.addProduct, name='addProduct'),
     path('vpo/', views.vpo, name='vpo'),
+    path('get_product_price/<int:product_id>/', views.get_product_price, name='get_product_price'),
+    path('viewvpo',views.viewvpo,name='viewvpo'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

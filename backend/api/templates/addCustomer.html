@@ -3,94 +3,127 @@
 {% block content %}
 <style>
     body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background-color: #e0e6ed;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 100%;
+   
+}
+
+.input-container {
+    max-width: 95%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+form {
+        display: flex;
+        flex-wrap: wrap;
     }
 
-    .card-vendor {
-        width: 100%;
-        margin-top: 50px;
-        padding: 20px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    form label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+        flex-basis: 100%;
     }
 
-    .container-fluid {
-        padding: 20px;
+    form .input-group {
+        display: flex;
+        flex-basis: 50%; /* Two fields per row */
+        margin-bottom: 15px;
     }
 
-    .form-control {
-        width: calc(100% - 12px); /* Adjust width to accommodate padding */
-        padding: 6px;
-        margin-bottom: 10px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+    form .input-group > * {
+        width: 100%; /* Each field within the input-group takes full width */
+        margin-right: 10px; /* Adjust spacing between fields */
     }
 
-    .btn-primary {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        margin-left: 45%;
+    form .input-group:last-child {
+        margin-bottom: 0; /* Remove bottom margin for the last input group */
     }
 
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-
-    .card-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #333;
-        text-align: center;
-    }
-
-    h1 {
-        text-align: center;
-        color: white;
-        background-color: #333;
+    input[type="text"], select {
         padding: 10px;
-        margin-top: 0;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        width: 100%; /* Ensure inputs take full width */
     }
+
+
+.btn-submit {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: calc(50% - 50px); /* Center the button */
+}
+
+.btn-submit:hover {
+    background-color: #555;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    background-color: #333;
+    padding: 10px;
+    margin-top: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
 </style>
 
-<div class="container-fluid">
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card-vendor">
+        
+            <div class="input-container">
                 <h1 >Add Customer</h1>
                 <form id="addCustomerForm" action="{% url 'addCustomer' %}" method="post">
                     {% csrf_token %}
                     
+
+                    <div class="input-group">
                     <label for="customerFirstName">First Name:</label>
                     <input type="text" id="customerFirstName" name="customerFirstName" maxlength="100" required class="form-control">
-                    
+                    </div>
+
+                    <div class="input-group">
                     <label for="customerMiddleName">Middle Name:</label>
                     <input type="text" id="customerMiddleName" name="customerMiddleName" maxlength="100" class="form-control">
-                    
+                    </div>
+
+                    <div class="input-group">
                     <label for="customerLastName">Last Name:</label>
                     <input type="text" id="customerLastName" name="customerLastName" maxlength="100" required class="form-control">
-                    
+                    </div>
+
+                    <div class="input-group">
                     <label for="customerAddress">Address:</label>
                     <input type="text" id="customerAddress" name="customerAddress" maxlength="200" required class="form-control">
-                    
+                    </div>
+
+                    <div class="input-group">
                     <label for="customerPhoneNumber">Phone Number:</label>
                     <input type="number" id="customerPhoneNumber" name="customerPhoneNumber" maxlength="20" required class="form-control">
+                    </div>
                     
-                    <button type="submit" class="btn btn-primary">Save Customer</button>
+                    <button type="submit" class="btn-submit">Save Customer</button>
                 </form>
             </div>
-        </div>
+        
     </div>
 </div>
 

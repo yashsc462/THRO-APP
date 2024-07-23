@@ -142,8 +142,8 @@ class VPO(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     serial_num = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    UOM = models.CharField(max_length=50)
-    QTY = models.IntegerField(default=0)
+    uom = models.CharField(max_length=50)
+    qty = models.IntegerField(default=0)
     rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     discount = models.IntegerField(default=0)
@@ -155,6 +155,7 @@ class VPO(models.Model):
 
     def __str__(self):
         return f'VPO {self.serial_num} - {self.vendor.name}'
+    
     
     
     
