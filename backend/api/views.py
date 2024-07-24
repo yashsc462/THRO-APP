@@ -516,4 +516,4 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
 
 
 def viewvpo(request):
-    return render('viewvpo.html')
+    return render(request,'viewvpo.html')

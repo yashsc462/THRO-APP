@@ -139,6 +139,24 @@ input#gst {
     cursor: not-allowed;
 }
 
+
+.remove-row {
+    cursor: pointer;
+    color: #dc3545; /* Use red for remove actions */
+    font-weight: bold;
+    padding: 10px 20px; /* Increase padding for larger size */
+    border: none;
+    background-color: transparent;
+    transition: transform 0.2s ease-in-out; /* Add transition for smooth scaling */
+}
+
+.remove-row:hover {
+    color: #333; /* Darker red on hover */
+    transform: scale(1.5); /* Scale up by 10% on hover */
+    background-color: transparent;
+    color: #dc3545; /* Use red for remove actions */
+}
+
 </style>
 
 <div class="container">
@@ -183,6 +201,11 @@ input#gst {
                     <label for="total">Total:</label>
                     <input type="number" name="total" class="total" readonly>
                 </div>
+                <div>
+                    <button type="button" class="btn remove-row" onclick="removeRow(this)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -203,6 +226,7 @@ input#gst {
 
             <label for="total_amount">Total Amount:</label>
             <input type="number" name="total_amount" id="total_amount" readonly>
+
         </div>
 
         <button type="submit">Create VPO</button>
@@ -217,6 +241,22 @@ input#gst {
         rateInput.value = price;
         updateTotal(row.querySelector('.QTY'));
     }
+
+
+    function removeRow(button) {
+        var row = button.closest('.product-row');
+        var container = document.getElementById('product-rows');
+        
+        // Check if there is only one row left
+        if (container.children.length > 1) {
+            row.parentNode.removeChild(row);
+            updateSummary();  // Update summary after removing the row
+        } else {
+            alert("Cannot remove the only row.");
+        }
+    }
+    
+    
 
     function updateTotal(quantityInput) {
         var row = quantityInput.closest('.product-row');

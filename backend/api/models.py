@@ -65,6 +65,7 @@ class Customer(models.Model):
     customerLastName = models.CharField(max_length=100)
     customerAddress = models.CharField(max_length= 200)
     customerPhoneNumber = models.CharField(max_length=20)
+    
 
 
 
@@ -140,6 +141,7 @@ class Product(models.Model):
 
 class VPO(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    
     serial_num = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     uom = models.CharField(max_length=50)
@@ -156,6 +158,7 @@ class VPO(models.Model):
     def __str__(self):
         return f'VPO {self.serial_num} - {self.vendor.name}'
     
+
     
     
     
