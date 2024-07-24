@@ -259,69 +259,7 @@ def get_product_price(request, product_id):
 
 
 
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from .models import VPO, Vendor, Product
-from io import BytesIO
-from django.core.files.base import ContentFile
 
-def vpo(request):
-    if request.method == 'POST':
-        vendor_id = request.POST.get('vendor')
-        serial_nums = request.POST.getlist('serial_num')
-        product_ids = request.POST.getlist('product')
-        UOMs = request.POST.getlist('UOM')
-        qtys = request.POST.getlist('QTY')
-        rates = request.POST.getlist('Rate')
-        totals = request.POST.getlist('total')
-        discount = request.POST.get('discount')
-        transportation = request.POST.get('transportation')
-        total_taxable_amount = request.POST.get('total_taxable_amount')
-        gst = request.POST.get('gst')
-        total_amount = request.POST.get('total_amount')
-
-        # Retrieve vendor
-        vendor = Vendor.objects.get(vendor_id=vendor_id)
-
-        # Create VPO objects
-        vpo_ids = []
-        for i in range(len(serial_nums)):
-            product = Product.objects.get(product_id=product_ids[i])
-            vpo = VPO(
-                vendor=vendor,
-                serial_num=serial_nums[i],
-                product=product,
-                uom=UOMs[i],
-                qty=qtys[i],
-                rate=rates[i],
-                total=totals[i]
-            )
-            vpo.save()
-            vpo_ids.append(vpo.id)
-
-        # Generate PDF
-        buffer = BytesIO()
-        generate_vpo_pdf(
-            buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, 
-            discount, transportation, total_taxable_amount, gst, total_amount
-        )
-        pdf = buffer.getvalue()
-        buffer.close()
-
-        # Save PDF to the database
-        vpo = VPO.objects.filter(id__in=vpo_ids).first()
-        vpo.proforma_invoice.save(f'vpo_{vpo.id}.pdf', ContentFile(pdf))
-
-        # Create response for download
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="vpo_{vpo.id}.pdf"'
-        return response
-
-    else:
-        vendors = Vendor.objects.all()
-        products = Product.objects.all()
-        context = {'vendors': vendors, 'products': products}
-        return render(request, 'vpo.html', context)
 
 
 
@@ -347,11 +285,17 @@ from reportlab.platypus import Table, TableStyle, Paragraph
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
+from datetime import datetime
 
-def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, discount, transportation, total_taxable_amount, gst, total_amount):
+def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, discount, transportation, total_taxable_amount, gst, total_amount, delivery_address, delivery_city, delivery_state, delivery_contact, bank_name, account_number, bank_ifsc,invoice_number):
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
     margin = inch
+
+    today_date = datetime.now().strftime("%d-%b-%Y")
+    c.setFont("Helvetica", 10)
+    c.drawRightString(width - margin, height - margin, f"Invoice Number: {invoice_number}")
+    c.drawRightString(width - margin, height - margin - 15, f"Date: {today_date}")
 
     # Heading
     c.setFont("Helvetica-Bold", 16)
@@ -389,10 +333,8 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
     buyer_details = [
         ["Buyer"],
         ["Sarla Agencies"],
-        ["36,Rikhi Bhuvan,L.N. Road,Matunga East Mumbai,Mumbai Suburban"],
-        ["Maharashtra, 400019"],
-        ["Phone: (987) 654-3210"],
-        ["Email: transfinite.one"]
+        ["36,Rikhi Bhuvan,L.N. Road,Matunga East Mumbai,Mumbai Suburban Maharashtra, 400019"],
+        ["Phone: (987) 654-3210"]
     ]
     buyer_table = Table(buyer_details, colWidths=[width - 2 * margin])
     buyer_table.setStyle(TableStyle([
@@ -466,7 +408,7 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
     summary_table.drawOn(c, margin, y)
 
     notes_title = "Notes:"
-    notes_content = "This is Proforma only, Tax invoice will be issued upon actual purchase.<br/>Payment Terms: 100% advance with confirm PO.<br/><br/>Delivery Address: aaaaaaaaaaaaaaaaaaaaaaa<br/>bbbbbbbbbbbbbbbbbb."
+    notes_content = f"This is Proforma only, Tax invoice will be issued upon actual purchase.<br/>Payment Terms: 100% advance with confirm PO.<br/><br/>Delivery Address: {delivery_address}<br/>{delivery_city}<br/>{delivery_state}<br/>{delivery_contact}."
     styles = getSampleStyleSheet()
     notes_style = ParagraphStyle(name='NotesStyle', fontSize=10, leading=12)
     notes_paragraph = Paragraph(f'<b>{notes_title}</b><br/>{notes_content}', style=notes_style)
@@ -501,8 +443,8 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
     stamp_signature_table.drawOn(c, margin, y)
 
     # Draw a box around the entire content
-    content_top = height - 1.2 * inch
-    content_bottom = y - margin
+    content_top = height - 1.3 * inch
+    content_bottom = margin - .1 * inch
     content_left = margin + -0.2 * inch  # Increased left margin
     content_right = width - margin - -0.2 * inch  # Increased right margin
 
@@ -515,5 +457,136 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
     c.save()
 
 
+
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.core.files.base import ContentFile
+from io import BytesIO
+from .models import Vendor, Product, VPO
+from django.utils import timezone
+import random
+import string
+
+def generate_invoice_number(vendor):
+    try:
+        # Retrieve the first 4 letters of the vendor name (in uppercase)
+        company_prefix = vendor.vendorName[:4].upper()
+
+        # Get the current month and year
+        now = timezone.now()
+        month = now.strftime('%m')
+        year = now.strftime('%y')
+
+        # Get the latest invoice number for this vendor
+        last_invoice = VPO.objects.filter(vendor=vendor).order_by('-id').first()
+        if last_invoice and last_invoice.invoice_number:
+            # Extract the numeric part of the last invoice number
+            last_number_str = last_invoice.invoice_number[-3:]
+            try:
+                last_number = int(last_number_str)
+            except ValueError:
+                last_number = 0
+        else:
+            last_number = 0
+
+        # Generate the next sequential number
+        next_number = str(last_number + 1).zfill(3)
+
+        # Format the invoice number
+        invoice_number = f"{company_prefix}{month}{year}{next_number}"
+        return invoice_number
+    except Exception as e:
+        print(f"Error generating invoice number: {e}")
+        return None  # or handle as appropriate
+
+
+def vpo(request):
+    if request.method == 'POST':
+        vendor_id = request.POST.get('vendor')
+        serial_nums = request.POST.getlist('serial_num')
+        product_ids = request.POST.getlist('product')
+        UOMs = request.POST.getlist('UOM')
+        qtys = request.POST.getlist('QTY')
+        rates = request.POST.getlist('Rate')
+        totals = request.POST.getlist('total')
+        discount = float(request.POST.get('discount', 0))  # Use float for decimal values
+        transportation = float(request.POST.get('transportation', 0))  # Use float for decimal values
+        total_taxable_amount = float(request.POST.get('total_taxable_amount', 0))  # Use float for decimal values
+        gst = float(request.POST.get('gst', 0))  # Use float for decimal values
+        total_amount = float(request.POST.get('total_amount', 0)) 
+        delivery_address = request.POST.get('delivery_address')
+        delivery_city = request.POST.get('delivery_city')
+        delivery_state = request.POST.get('delivery_state')
+        delivery_contact = request.POST.get('delivery_contact')
+        bank_name = request.POST.get('bank_name')
+        account_number = request.POST.get('account_number')
+        bank_ifsc = request.POST.get('bank_ifsc')
+
+        # Retrieve vendor
+        vendor = Vendor.objects.get(vendor_id=vendor_id)
+
+        # Generate invoice number
+        invoice_number = generate_invoice_number(vendor)
+
+        # Create VPO objects
+        vpo_ids = []
+        for i in range(len(serial_nums)):
+            product = Product.objects.get(product_id=product_ids[i])
+            vpo = VPO(
+                vendor=vendor,
+                serial_num=serial_nums[i],
+                product=product,
+                uom=UOMs[i],
+                qty=qtys[i],
+                rate=rates[i],
+                total=totals[i],
+                discount=discount,
+                transportation=transportation,
+                total_taxable_amount=total_taxable_amount,
+                gst=gst,
+                total_amount=total_amount,
+                delivery_address=delivery_address,
+                delivery_city=delivery_city,
+                delivery_state=delivery_state,
+                delivery_contact=delivery_contact,
+                bank_name=bank_name,
+                account_number=account_number,
+                bank_ifsc=bank_ifsc,
+                invoice_number=invoice_number,
+                # Add more fields as needed
+            )
+            vpo.save()
+            vpo_ids.append(vpo.id)
+
+        # Retrieve the last created VPO to get the generated invoice number
+        vpo = VPO.objects.get(id=vpo_ids[-1])
+
+        # Generate PDF
+        buffer = BytesIO()
+        generate_vpo_pdf(
+            buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, 
+            discount, transportation, total_taxable_amount, gst, total_amount,
+            delivery_address, delivery_city, delivery_state, delivery_contact,
+            bank_name, account_number, bank_ifsc, invoice_number
+            # Add more fields as needed
+        )
+        pdf = buffer.getvalue()
+        buffer.close()
+
+        # Save PDF to the database
+        vpo.proforma_invoice.save(f'vpo_{vpo.invoice_number}.pdf', ContentFile(pdf))
+
+        # Create response for download
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="vpo_{vpo.invoice_number}.pdf"'
+        return response
+
+    else:
+        vendors = Vendor.objects.all()
+        products = Product.objects.all()
+        context = {'vendors': vendors, 'products': products}
+        return render(request, 'vpo.html', context)
+
 def viewvpo(request):
-    return render('viewvpo.html')
+    return render(request,'viewvpo.html')

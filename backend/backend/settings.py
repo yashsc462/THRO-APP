@@ -19,8 +19,8 @@ import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -142,12 +142,27 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_URL = [
-    os.path.join(BASE_DIR, 'backend\\static')
-]
-STATIC_ROOT = os.path.join(BASE_DIR,'assests')
+# STATIC_URL = '/static/'
+# STATICFILES_URL = [
+#     os.path.join(BASE_DIR, 'backend\static')
+# ]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, '\\api\\static'),
+# ]
+
+STATIC_URL = '/static/'
+
+# Corrected STATICFILES_DIRS
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'api/static'),  
+    'D:\THRO-APP\\backend\\api\\static'          # Adjust this path accordingly
+   
+]
+
+# Assuming you want to collect static files into 'assets' directory
+STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # Default primary key field type
