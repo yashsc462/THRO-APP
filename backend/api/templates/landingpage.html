@@ -6,6 +6,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THRO</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}"> <!-- Link to your CSS file -->
+    <style>
+        .slideshow-container {
+            position: relative;
+            max-width: 80%;
+            margin: auto;
+            overflow: hidden;
+            /* Add padding to prevent images from touching the edges */
+            padding: 20px;
+        }
+
+        .scrollable-images {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 100%;
+        }
+
+        .slides {
+            flex: 0 0 100%;
+            box-sizing: border-box;
+        }
+
+        .slides img {
+            width: 100%;
+            height: auto; /* Adjust height automatically to maintain aspect ratio */
+            max-height: 400px; /* Adjust max height as needed */
+            object-fit: contain; /* Ensure the image is contained within the dimensions */
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: black; /* Black background for the buttons */
+            border: none;
+            border-radius: 50%;
+            user-select: none;
+            z-index: 1;
+        }
+
+        .prev {
+            left: 0px; /* Adjust position as needed */
+        }
+
+        .next {
+            right: 0px; /* Adjust position as needed */
+        }
+
+        .prev:hover, .next:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .btn-submit {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none; /* Remove underline from the button */
+            display: inline-block; /* Ensure button is properly sized */
+            margin-top: 20px; /* Space between button and image carousel */
+        }
+
+        .btn-submit:hover {
+            background-color: #555;
+        }
+
+        .fire-img{
+            height:fix-content;
+            max-width:fix-content  ;
+            margin-top:-7%;
+            
+        }
+
+        .fire-img1{
+            margin-top:-30%;
+
+        }
+
+        .fire-img2{
+            color:red;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -26,9 +116,16 @@
 
     <section id="hero">
         <div class="container">
+            <div class="fire-img">
+                <img src="https://c.files.bbci.co.uk/BE8C/production/_114408784_gettyimages-72984061.jpg" alt="Product 2">
+            </div>
+            <div class="fire-img1">
             <h2>Your Safety is Our Priority</h2>
-            <p>Our range of high-quality fire extinguishers designed to protect you and your property.</p>
-            <a href="#products" class="btn">View Products</a>
+            </div>
+            <div class="fire-img2">
+            <p><strong>Our range of high-quality fire extinguishers designed to protect you and your property.</strong></p>
+            </div>
+            <a href="#products" class="btn-submit">View Products</a>
         </div>
     </section>
 
@@ -57,7 +154,7 @@
                 </div>
                 <div class="card">
                     <h3>ABC Multipurpose</h3>
-                    <p>Effective on Class A, B, and C fires. Suitable for homes and offices.</p>
+                    <p>Effective on Class A, B, and C fires. Suitable for homes and offices.</p> 
                 </div>
             </div>
         </div>
@@ -73,21 +170,28 @@
     <section id="products">
         <div class="container">
             <h2>Our Products</h2>
-            <div class="grid">
-                <div class="product">
-                    <img src="{% static 'images/TP1.jpg' %}" alt="Product Image">
-                    <h3>Thro Pack of 1</h3>
-                    <p>Description and features of the product.</p>
-                    <a href="#" class="btn">Buy Now</a>
+            <div class="slideshow-container">
+                <div class="scrollable-images" id="slideshow">
+                    <div class="slides">
+                        <img src="https://m.media-amazon.com/images/I/419EeocXdoL._SX300_SY300_QL70_FMwebp_.jpg" alt="Product 1">
+                    </div>
+                    <div class="slides">
+                        <img src="https://m.media-amazon.com/images/I/51JPlqjCsyL._SX300_SY300_QL70_FMwebp_.jpg" alt="Product 2">
+                    </div>
+                    <div class="slides">
+                        <img src="https://m.media-amazon.com/images/I/41q8TZgl6KL._SX300_SY300_QL70_FMwebp_.jpg" alt="Product 2">
+                    </div>
+                    <div class="slides">
+                        <img src="https://m.media-amazon.com/images/I/4162jVivVjL._SX300_SY300_QL70_FMwebp_.jpg" alt="Product 2">
+                    </div>
+                    <!-- Add more slides as needed -->
                 </div>
-                <div class="product">
-                    <img src="{% static 'backend/api/static/images/TV1.jpg' %}" alt="Product 2">
-                    <h3>Product 2 Name</h3>
-                    <p>Description and features of the product.</p>
-                    <a href="#" class="btn">Buy Now</a>
-                </div>
-                <!-- Add more products as needed -->
+
+                <!-- Next and previous buttons -->
+                <a class="prev" onclick="scrollSlides(-1)">&#10094;</a>
+                <a class="next" onclick="scrollSlides(1)">&#10095;</a>
             </div>
+            <a href="#" class="btn-submit">Buy Now</a>
         </div>
     </section>
 
@@ -113,7 +217,7 @@
                     <textarea id="message" name="message" placeholder="Your Message" required></textarea>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn">Send Message</button>
+                    <button type="submit" class="btn-submit">Send Message</button>
                 </div>
             </div>
         </div>
@@ -125,6 +229,26 @@
         </div>
     </footer>
     
-    <script src="{% static 'script.js' %}"></script> <!-- Link to your JavaScript file -->
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelectorAll(".slides");
+
+        function showSlide(index) {
+            const totalSlides = slides.length;
+            if (index >= totalSlides) { slideIndex = 0; }
+            else if (index < 0) { slideIndex = totalSlides - 1; }
+            else { slideIndex = index; }
+
+            const offset = -slideIndex * 100;
+            document.getElementById("slideshow").style.transform = `translateX(${offset}%)`;
+        }
+
+        function scrollSlides(n) {
+            showSlide(slideIndex + n);
+        }
+
+        // Initialize the first slide
+        showSlide(slideIndex);
+    </script>
 </body>
 </html>

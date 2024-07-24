@@ -156,7 +156,9 @@ STATIC_URL = '/static/'
 
 # Corrected STATICFILES_DIRS
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'api/static'),  # Adjust as per your actual structure
+    os.path.join(BASE_DIR, 'api/static'),  
+    'D:\THRO-APP\\backend\\api\\static'          # Adjust this path accordingly
+   
 ]
 
 # Assuming you want to collect static files into 'assets' directory
