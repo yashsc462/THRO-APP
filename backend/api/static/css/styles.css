@@ -65,7 +65,7 @@
 
         /* Hero section */
         #hero {
-            background-image: url('https://m.media-amazon.com/images/I/51wohWqHZUL._AC_UL320_.jpg'); /* Replace with your hero image */
+            /* background-image: url('https://m.media-amazon.com/images/I/51wohWqHZUL._AC_UL320_.jpg'); Replace with your hero image */
             background-size: cover;
             background-position: center;
             color: #fff;
