@@ -52,6 +52,10 @@ class Vendor(models.Model):
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=2, choices=STATES_CHOICES)
     pincode = models.CharField(max_length=10)
+    ifscCode = models.CharField(max_length=20)
+    accountNo = models.IntegerField()
+    branch = models.CharField(max_length=30)
+    nameOfBank = models.CharField(max_length=30)
 
     def __str__(self):
         return self.vendorName
