@@ -15,13 +15,14 @@ body {
 
 /* Form Container */
 .container {
-    background: #fff;
-    max-width: 95%;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+        max-width: 95%;
+        margin: 20px auto; /* Center align and add spacing */
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 0%; 
+    }
 
 /* Form Elements */
 label {
@@ -48,13 +49,15 @@ input[readonly] {
 
 button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #333;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease;
+    margin-left: 47%;
+    margin-top:10px ;
 }
 
 button:hover {
@@ -96,7 +99,7 @@ button:focus {
 /* Add Row Button */
 button.add-row {
     padding: 10px 20px;
-    background-color: #28a745;
+    background-color: #333;
     color: white;
     border: none;
     border-radius: 4px;
@@ -157,9 +160,22 @@ input#gst {
     color: #dc3545; /* Use red for remove actions */
 }
 
-</style>
+h1 {
+    text-align: center;
+    color: white;
+    background-color: #333;
+    padding: 10px;
+    margin-top: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    
+    }
 
+</style>
 <div class="container">
+<h1>VPO List</h1>
+
+<!-- <div class="container"> -->
     <form method="post" id="vpo-form">
         {% csrf_token %}
         <label for="vendor">Vendor:</label>
@@ -200,11 +216,14 @@ input#gst {
                 <div>
                     <label for="total">Total:</label>
                     <input type="number" name="total" class="total" readonly>
-                </div>
-                <div>
                     <button type="button" class="btn remove-row" onclick="removeRow(this)">
                         <i class="fas fa-trash-alt"></i>
                     </button>
+                </div>
+                <div>
+                    <!-- <button type="button" class="btn remove-row" onclick="removeRow(this)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -227,7 +246,7 @@ input#gst {
             <label for="total_amount">Total Amount:</label>
             <input type="number" name="total_amount" id="total_amount" readonly>
     
-            <label for="delivery_address">Delivery Address:</label>
+            {% comment %} <label for="delivery_address">Delivery Address:</label>
             <input type="text" name="delivery_address" id="total_taxadelivery_addressble_amount" >
     
             <label for="delivery_city">City:</label>
@@ -246,14 +265,29 @@ input#gst {
             <input type="number" name="account_number" id="account_number" >
     
             <label for="bank_ifsc">Account Number:</label>
-            <input type="text" name="bank_ifsc" id="bank_ifsc" >
+            <input type="text" name="bank_ifsc" id="bank_ifsc" > {% endcomment %}
         </div>
     
         <button type="submit">Create VPO</button>
     </form>
 </div>
+</div>
 
 <script>
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeSerialNumbers();
+    });
+    
+    function initializeSerialNumbers() {
+        var rows = document.querySelectorAll('.product-row');
+        rows.forEach(function(row, index) {
+            var serialNumInput = row.querySelector('.serial_num');
+            serialNumInput.value = index + 1;
+        });
+    }
+    
     function updateRate(selectElement) {
         var price = selectElement.options[selectElement.selectedIndex].dataset.price;
         var row = selectElement.closest('.product-row');
@@ -266,15 +300,25 @@ input#gst {
     function removeRow(button) {
         var row = button.closest('.product-row');
         var container = document.getElementById('product-rows');
-        
+    
         // Check if there is only one row left
         if (container.children.length > 1) {
-            row.parentNode.removeChild(row);
-            updateSummary();  // Update summary after removing the row
+            container.removeChild(row);
+            updateSerialNumbers();
+            updateSummary(); // Update summary after removing the row
         } else {
             alert("Cannot remove the only row.");
         }
     }
+    
+    // Function to update serial numbers after removing a row
+    function updateSerialNumbers() {
+        var rows = document.querySelectorAll('.product-row');
+        rows.forEach(function(row, index) {
+            row.querySelector('.serial_num').value = index + 1;
+        });
+    }
+    
     
     
 
@@ -289,16 +333,26 @@ input#gst {
 
     function addRow() {
         var container = document.getElementById('product-rows');
-        var row = container.querySelector('.product-row').cloneNode(true);
-        row.querySelector('.serial_num').value = '';
-        row.querySelector('.product').value = '';
-        row.querySelector('.product').dispatchEvent(new Event('change'));
-        row.querySelector('.UOM').value = '';
-        row.querySelector('.QTY').value = '';
-        row.querySelector('.Rate').value = '';
-        row.querySelector('.total').value = '';
-        container.appendChild(row);
+        var rows = container.querySelectorAll('.product-row');
+        var newRow = rows[0].cloneNode(true); // Clone the first row or any existing row
+    
+        // Calculate the next serial number
+        var nextSerialNum = rows.length + 1;
+    
+        // Update the serial number field
+        newRow.querySelector('.serial_num').value = nextSerialNum;
+    
+        // Clear other fields if needed
+        newRow.querySelector('.product').value = '';
+        newRow.querySelector('.product').dispatchEvent(new Event('change'));
+        newRow.querySelector('.UOM').value = '';
+        newRow.querySelector('.QTY').value = '';
+        newRow.querySelector('.Rate').value = '';
+        newRow.querySelector('.total').value = '';
+    
+        container.appendChild(newRow);
     }
+    
 
     function updateSummary() {
         var rows = document.querySelectorAll('.product-row');

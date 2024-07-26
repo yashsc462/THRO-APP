@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 # Create your models here.
 
     
@@ -145,7 +145,7 @@ class Product(models.Model):
 
 class VPO(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
-    invoice_number = models.CharField(max_length=20, unique=True, blank=True)
+    invoice_number = models.CharField(max_length=20,  blank=True)
     serial_num = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     uom = models.CharField(max_length=50)
@@ -158,16 +158,46 @@ class VPO(models.Model):
     gst = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     proforma_invoice = models.FileField(upload_to='media/')
-    delivery_address = models.CharField(max_length=200)
-    delivery_city = models.CharField(max_length=20)
-    delivery_state = models.CharField(max_length=20)
-    delivery_contact = models.PositiveIntegerField()
-    bank_name = models.CharField(max_length=50)
-    account_number=models.PositiveIntegerField()
-    bank_ifsc = models.CharField(max_length=15)
+    date_created = models.DateTimeField(default=timezone.now)
+    # delivery_address = models.CharField(max_length=200)
+    # delivery_city = models.CharField(max_length=20)
+    # delivery_state = models.CharField(max_length=20)
+    # delivery_contact = models.PositiveIntegerField()
+    # bank_name = models.CharField(max_length=50)
+    # account_number=models.PositiveIntegerField()
+    # bank_ifsc = models.CharField(max_length=15)
 
     def __str__(self):
         return f'VPO {self.serial_num} - {self.vendor.name}'
+    
+    
+    
+class PO(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    invoice_number = models.CharField(max_length=20,  blank=True)
+    serial_num = models.IntegerField()
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    uom = models.CharField(max_length=50)
+    qty = models.IntegerField(default=0)
+    rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    transportation = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_taxable_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    gst = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    proforma_invoice = models.FileField(upload_to='media/')
+    date_created = models.DateTimeField(default=timezone.now)
+    # delivery_address = models.CharField(max_length=200)
+    # delivery_city = models.CharField(max_length=20)
+    # delivery_state = models.CharField(max_length=20)
+    # delivery_contact = models.PositiveIntegerField()
+    # bank_name = models.CharField(max_length=50)
+    # account_number=models.PositiveIntegerField()
+    # bank_ifsc = models.CharField(max_length=15)
+
+    def __str__(self):
+        return f'VPO {self.serial_num}'
     
 
     

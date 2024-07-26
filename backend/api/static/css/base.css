@@ -36,16 +36,18 @@ body {
 }
 
 .sidebar {
-  width: 200px;
-  background-color: #fff; /* Card background color */
-  color: #000; /* Card text color */
+  width: 250px; /* Increased width for better spacing */
+  background-color: #343a40; /* Changed to match navbar */
+  color: #fff;
   padding: 1rem;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
-  position: fixed; /* Fixes the position of the sidebar */
-  height: calc(100vh - 3rem); /* Ensures the sidebar takes specific height */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Card shadow */
-  border-radius: 0.25rem; /* Card border radius */
+  position: fixed;
+  top: 3rem; /* Adjusted for the navbar height */
+  left: 0;
+  height: calc(100vh - 3rem);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0; /* Removed border radius for a more modern look */
 }
 
 .sidebar.active {
@@ -70,7 +72,7 @@ body {
 }
 
 .sidebar ul li a {
-  color: blue;
+  color: #fff; /* Changed link color to white for better visibility */
   text-decoration: none;
   display: block;
   padding: 0.5rem 1rem;
@@ -78,16 +80,46 @@ body {
 }
 
 .sidebar ul li a:hover {
-  background-color: #f8f9fa;
+  background-color: #495057; /* Subtle hover effect */
 }
 
 .flex-grow-1 {
   flex-grow: 1;
-  /* margin-left: 200px; Adjusts the main content to leave space for sidebar */
   transition: margin-left 0.3s ease; /* Smooth transition for margin adjustment */
   padding-top: 3rem; /* Adjusted for the navbar height */
+  margin-left: 0; /* Ensure initial position */
 }
 
 .sidebar.active + .flex-grow-1 {
-  margin-left: 200px; /* Ensure the main content shifts correctly when the sidebar is active */
+  margin-left: 250px; /* Adjusted for increased sidebar width */
+}
+
+/* Additional styling for better appearance */
+.sidebar ul li a i {
+  margin-right: 10px; /* Spacing for icons */
+}
+
+.navbar h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+footer {
+  background-color: #333;
+  color: #fff;
+  padding: 10px ;
+  /* position: relative; */
+  bottom: 100%;
+  width: 100%;
+  margin-top: 735px;
+}
+
+footer .container {
+  max-width: 100%;
+  /* margin: 0 auto; */
+}
+
+footer p {
+  align-items: center;
+  margin: 0;
 }

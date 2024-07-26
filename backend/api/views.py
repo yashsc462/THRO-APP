@@ -65,9 +65,13 @@ def addVendor(request):
         city = request.POST.get('city')
         state = request.POST.get('state')
         pincode = request.POST.get('pincode')
+        ifscCode = request.POST.get('ifscCode')
+        accountNo = request.POST.get('accountNo')
+        branch = request.POST.get('branch')
+        nameOfBank = request.POST.get('nameOfBank')
 
         # Checking of the valid data
-        if not vendor_id or not vendor_name or not vendor_address or not vendor_gst_number or not vendor_phone_number or not city or not state or not pincode:
+        if not ifscCode or not branch or not nameOfBank or not accountNo or not vendor_id or not vendor_name or not vendor_address or not vendor_gst_number or not vendor_phone_number or not city or not state or not pincode:
             messages.error(request, 'All fields are required.')
             return redirect('addVendor')
         
@@ -80,7 +84,11 @@ def addVendor(request):
                 vendorPhoneNumber=vendor_phone_number,
                 city=city,
                 state=state,
-                pincode=pincode
+                pincode=pincode,
+                ifscCode = ifscCode,
+                accountNo = accountNo,
+                branch = branch,
+                nameOfBank = nameOfBank,
             )
             messages.success(request, 'Vendor added successfully.')
             return redirect('addVendor')
@@ -201,7 +209,7 @@ def addProduct(request):
 # def vpo(request):
 #     if request.method == 'POST':
 #         # Retrieve form data from POST request
-#         vendor_id = request.POST.get('vendor')
+#         vendor_id = request.POST.get('vendor'+)
 #         serial_num = request.POST.get('serial_num')
 #         product_id = request.POST.get('product')
 #         UOM = request.POST.get('UOM')
@@ -249,7 +257,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET
 from .models import Product
 
-@require_GET
+@require_GET    
 def get_product_price(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     data = {
@@ -272,22 +280,13 @@ def get_product_price(request, product_id):
     
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib import colors
-from reportlab.platypus import Table, TableStyle
-from reportlab.platypus import Paragraph, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet,ParagraphStyle
-
-
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle, Paragraph
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from datetime import datetime
 
-def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, discount, transportation, total_taxable_amount, gst, total_amount, delivery_address, delivery_city, delivery_state, delivery_contact, bank_name, account_number, bank_ifsc,invoice_number):
+def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, discount, transportation, total_taxable_amount, gst, total_amount, invoice_number):
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
     margin = inch
@@ -302,53 +301,50 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
     c.drawCentredString(width / 2, height - margin, "Proforma Invoice")
 
     # Gap between heading and company details
-    gap_height = -0.6 * inch  # Adjusted gap height
+    gap_height = 0 * inch  # Adjusted gap height
 
-    # Company details table
+
+    # Combined company (vendor) and buyer details table
     company_details = [
-        ["Seller"],
+        ["Seller:"],
         [vendor.vendorName],
         [vendor.vendorAddress],
         [vendor.vendorPhoneNumber],
-        [vendor.vendorGstNumber],
+        [f"GST number: {vendor.vendorGstNumber}"],
     ]
-    company_table = Table(company_details, colWidths=[width - 2 * margin])
-    company_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10.),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
-    ]))
-    company_table_width, company_table_height = company_table.wrap(width - 2 * margin, height)
-    y = height - 2 * margin - gap_height - company_table_height
-    company_table.drawOn(c, margin, y)
-
-    line_y = y - 1  # Adjust position of the line if necessary
-    c.setStrokeColor(colors.black)
-    c.setLineWidth(1)
-    c.line(margin, line_y, width - margin, line_y)
-    c.line(margin, line_y + 3, width - margin, line_y + 3)
-
-    # Buyer details table
+    
     buyer_details = [
-        ["Buyer"],
+        ["Buyer:"],
         ["Sarla Agencies"],
-        ["36,Rikhi Bhuvan,L.N. Road,Matunga East Mumbai,Mumbai Suburban Maharashtra, 400019"],
+        ["36, Rikhi Bhuvan, L.N. Road,"],
+        ["Matunga East Mumbai,"],
+        ["Mumbai Suburban, Maharashtra, 400019"],
         ["Phone: (987) 654-3210"]
     ]
-    buyer_table = Table(buyer_details, colWidths=[width - 2 * margin])
-    buyer_table.setStyle(TableStyle([
+    
+    combined_details = [
+        [Table(company_details, colWidths=[(width - 2 * margin) / 2]), Table(buyer_details, colWidths=[(width - 2 * margin) / 2])]
+    ]
+    
+    combined_table = Table(combined_details, colWidths=[(width - 2 * margin) / 2, (width - 2 * margin) / 2])
+    combined_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ('INNERGRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BOX', (0, 0), (-1, -1), 1, colors.black)
     ]))
-    buyer_table_width, buyer_table_height = buyer_table.wrap(width - 2 * margin, height)
-    y -= company_table_height + 20  # Adjust y-coordinate to fit the new section
-    buyer_table.drawOn(c, margin, y)
+    
+    combined_table_width, combined_table_height = combined_table.wrap(width - 2 * margin, height)
+    y = height - 2 * margin - gap_height - combined_table_height
+    combined_table.drawOn(c, margin, y)
+
+    # Move y-coordinate down for the next section
+    y -= combined_table_height + 20  # Adjust margin if necessary
 
     # Gap before table header
-    y -= 0.5 * inch
+    y -= -1.3 * inch
 
     # Table data
     table_data = [["Sr No.", "Description", "UOM", "QTY", "Rate", "Total"]]
@@ -408,7 +404,7 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
     summary_table.drawOn(c, margin, y)
 
     notes_title = "Notes:"
-    notes_content = f"This is Proforma only, Tax invoice will be issued upon actual purchase.<br/>Payment Terms: 100% advance with confirm PO.<br/><br/>Delivery Address: {delivery_address}<br/>{delivery_city}<br/>{delivery_state}<br/>{delivery_contact}."
+    notes_content = f"This is Proforma only, Tax invoice will be issued upon actual purchase.<br/>Payment Terms: 100% advance with confirm PO.<br/>Delivery Address:{vendor.vendorAddress}<br/>{vendor.city}<br/>Contact:{vendor.vendorPhoneNumber}."
     styles = getSampleStyleSheet()
     notes_style = ParagraphStyle(name='NotesStyle', fontSize=10, leading=12)
     notes_paragraph = Paragraph(f'<b>{notes_title}</b><br/>{notes_content}', style=notes_style)
@@ -468,25 +464,28 @@ from django.utils import timezone
 import random
 import string
 
+from django.utils import timezone
+
 def generate_invoice_number(vendor):
     try:
         # Retrieve the first 4 letters of the vendor name (in uppercase)
         company_prefix = vendor.vendorName[:4].upper()
 
         # Get the current month and year
-        now = timezone.now()
+        now = timezone.now()  # Ensure timezone-aware datetime if needed
         month = now.strftime('%m')
         year = now.strftime('%y')
 
         # Get the latest invoice number for this vendor
         last_invoice = VPO.objects.filter(vendor=vendor).order_by('-id').first()
+        
         if last_invoice and last_invoice.invoice_number:
             # Extract the numeric part of the last invoice number
             last_number_str = last_invoice.invoice_number[-3:]
             try:
                 last_number = int(last_number_str)
             except ValueError:
-                last_number = 0
+                last_number = 0  # Handle cases where the suffix might be malformed
         else:
             last_number = 0
 
@@ -498,7 +497,7 @@ def generate_invoice_number(vendor):
         return invoice_number
     except Exception as e:
         print(f"Error generating invoice number: {e}")
-        return None  # or handle as appropriate
+        return None  # Handle the error as appropriate, possibly with loggin
 
 
 def vpo(request):
@@ -515,13 +514,6 @@ def vpo(request):
         total_taxable_amount = float(request.POST.get('total_taxable_amount', 0))  # Use float for decimal values
         gst = float(request.POST.get('gst', 0))  # Use float for decimal values
         total_amount = float(request.POST.get('total_amount', 0)) 
-        delivery_address = request.POST.get('delivery_address')
-        delivery_city = request.POST.get('delivery_city')
-        delivery_state = request.POST.get('delivery_state')
-        delivery_contact = request.POST.get('delivery_contact')
-        bank_name = request.POST.get('bank_name')
-        account_number = request.POST.get('account_number')
-        bank_ifsc = request.POST.get('bank_ifsc')
 
         # Retrieve vendor
         vendor = Vendor.objects.get(vendor_id=vendor_id)
@@ -546,13 +538,6 @@ def vpo(request):
                 total_taxable_amount=total_taxable_amount,
                 gst=gst,
                 total_amount=total_amount,
-                delivery_address=delivery_address,
-                delivery_city=delivery_city,
-                delivery_state=delivery_state,
-                delivery_contact=delivery_contact,
-                bank_name=bank_name,
-                account_number=account_number,
-                bank_ifsc=bank_ifsc,
                 invoice_number=invoice_number,
                 # Add more fields as needed
             )
@@ -566,9 +551,7 @@ def vpo(request):
         buffer = BytesIO()
         generate_vpo_pdf(
             buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, 
-            discount, transportation, total_taxable_amount, gst, total_amount,
-            delivery_address, delivery_city, delivery_state, delivery_contact,
-            bank_name, account_number, bank_ifsc, invoice_number
+            discount, transportation, total_taxable_amount, gst, total_amount, invoice_number
             # Add more fields as needed
         )
         pdf = buffer.getvalue()
@@ -587,6 +570,265 @@ def vpo(request):
         products = Product.objects.all()
         context = {'vendors': vendors, 'products': products}
         return render(request, 'vpo.html', context)
+    
+from .models import VPO
+
+
+
+from django.db.models import OuterRef, Subquery
 
 def viewvpo(request):
-    return render(request,'viewvpo.html')
+    # Subquery to get the latest VPO based on invoice_number
+    latest_vpo_subquery = VPO.objects.filter(
+        invoice_number=OuterRef('invoice_number'),
+        proforma_invoice__isnull=False
+    ).order_by('-id')  # Assuming `id` is the primary key of VPO, adjust as per your model
+
+    # Query to fetch the latest VPO records based on invoice_number
+    vpos = VPO.objects.filter(
+        id=Subquery(latest_vpo_subquery.values('id')[:1])
+    ).order_by('invoice_number')
+
+    return render(request, 'viewvpo.html', {'vpos': vpos})
+
+
+from .models import PO
+
+def po(request):
+    if request.method == 'POST':
+        vendor_id = request.POST.get('vendor')
+        serial_nums = request.POST.getlist('serial_num')
+        product_ids = request.POST.getlist('product')
+        UOMs = request.POST.getlist('UOM')
+        qtys = request.POST.getlist('QTY')
+        rates = request.POST.getlist('Rate')
+        totals = request.POST.getlist('total')
+        discount = float(request.POST.get('discount', 0))  # Use float for decimal values
+        transportation = float(request.POST.get('transportation', 0))  # Use float for decimal values
+        total_taxable_amount = float(request.POST.get('total_taxable_amount', 0))  # Use float for decimal values
+        gst = float(request.POST.get('gst', 0))  # Use float for decimal values
+        total_amount = float(request.POST.get('total_amount', 0)) 
+
+        # Retrieve vendor
+        vendor = Vendor.objects.get(vendor_id=vendor_id)
+
+        # Generate invoice number
+        invoice_number = generate_invoice_number(vendor)
+
+        # Create VPO objects
+        po_ids = []
+        for i in range(len(serial_nums)):
+            product = Product.objects.get(product_id=product_ids[i])
+            po = PO(
+                vendor=vendor,
+                serial_num=serial_nums[i],
+                product=product,
+                uom=UOMs[i],
+                qty=qtys[i],
+                rate=rates[i],
+                total=totals[i],
+                discount=discount,
+                transportation=transportation,
+                total_taxable_amount=total_taxable_amount,
+                gst=gst,
+                total_amount=total_amount,
+                invoice_number=invoice_number,
+                # Add more fields as needed
+            )
+            po.save()
+            po_ids.append(po.id)
+
+        # Retrieve the last created VPO to get the generated invoice number
+        po = PO.objects.get(id=po_ids[-1])
+
+        # Generate PDF
+        buffer = BytesIO()
+        generate_po_pdf(
+            buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, 
+            discount, transportation, total_taxable_amount, gst, total_amount, invoice_number
+            # Add more fields as needed
+        )
+        pdf = buffer.getvalue()
+        buffer.close()
+
+        # Save PDF to the database
+        po.proforma_invoice.save(f'po_{po.invoice_number}.pdf', ContentFile(pdf))
+
+        # Create response for download
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="po_{po.invoice_number}.pdf"'
+        return response
+
+    else:
+        vendors = Vendor.objects.all()
+        products = Product.objects.all()
+        context = {'vendors': vendors, 'products': products}
+        return render(request, 'PO.html', context)
+    
+    
+    
+def generate_po_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, discount, transportation, total_taxable_amount, gst, total_amount, invoice_number):
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    margin = inch
+
+    today_date = datetime.now().strftime("%d-%b-%Y")
+    c.setFont("Helvetica", 10)
+    c.drawRightString(width - margin, height - margin, f"Invoice Number: {invoice_number}")
+    c.drawRightString(width - margin, height - margin - 15, f"Date: {today_date}")
+
+    # Heading
+    c.setFont("Helvetica-Bold", 16)
+    c.drawCentredString(width / 2, height - margin, "Tax Invoice")
+
+    # Gap between heading and company details
+    gap_height = 0 * inch  # Adjusted gap height
+
+
+    # Combined company (vendor) and buyer details table
+    company_details = [
+        ["Seller:"],
+        [vendor.vendorName],
+        [vendor.vendorAddress],
+        [vendor.vendorPhoneNumber],
+        [f"GST number: {vendor.vendorGstNumber}"],
+    ]
+    
+    buyer_details = [
+        ["Buyer:"],
+        ["Sarla Agencies"],
+        ["36, Rikhi Bhuvan, L.N. Road,"],
+        ["Matunga East Mumbai,"],
+        ["Mumbai Suburban, Maharashtra, 400019"],
+        ["Phone: (987) 654-3210"]
+    ]
+    
+    combined_details = [
+        [Table(company_details, colWidths=[(width - 2 * margin) / 2]), Table(buyer_details, colWidths=[(width - 2 * margin) / 2])]
+    ]
+    
+    combined_table = Table(combined_details, colWidths=[(width - 2 * margin) / 2, (width - 2 * margin) / 2])
+    combined_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ('INNERGRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BOX', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    
+    combined_table_width, combined_table_height = combined_table.wrap(width - 2 * margin, height)
+    y = height - 2 * margin - gap_height - combined_table_height
+    combined_table.drawOn(c, margin, y)
+
+    # Move y-coordinate down for the next section
+    y -= combined_table_height + 20  # Adjust margin if necessary
+
+    # Gap before table header
+    y -= -1.3 * inch
+
+    # Table data
+    table_data = [["Sr No.", "Description", "UOM", "QTY", "Rate", "Total"]]
+    for i in range(len(serial_nums)):
+        product = Product.objects.get(product_id=product_ids[i])
+        row = [
+            serial_nums[i],
+            product.description,
+            UOMs[i],
+            str(qtys[i]),
+            str(rates[i]),
+            str(totals[i])
+        ]
+        table_data.append(row)
+
+    # Table style
+    table_style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ])
+
+    # Create table
+    product_table = Table(table_data, colWidths=[50, 160, 60, 60, 70, 67])
+    product_table.setStyle(table_style)
+    product_table_width, product_table_height = product_table.wrap(width - 2 * margin, height)
+    y -= product_table_height
+
+    # Draw the product table
+    product_table.drawOn(c, margin, y)
+
+    # Move y-coordinate down for summary table
+    y -= -0.2 * inch  # Adjust this if you need more space between the product table and summary table
+
+    # Summary table
+    summary_data = [
+        ["Discount", discount],
+        ["Transportation", transportation],
+        ["Total Taxable Amount", total_taxable_amount],
+        ["GST", gst],
+        ["Total Amount", total_amount]
+    ]
+    summary_table = Table(summary_data, colWidths=[400, 67])
+    summary_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    summary_table_width, summary_table_height = summary_table.wrap(width - 2 * margin, height)
+    y -= summary_table_height + 15  # Adjust margin if necessary
+    summary_table.drawOn(c, margin, y)
+
+    notes_title = "Notes:"
+    notes_content = f"This is Proforma only, Tax invoice will be issued upon actual purchase.<br/>Payment Terms: 100% advance with confirm PO.<br/>Delivery Address:{vendor.vendorAddress}<br/>{vendor.city}<br/>Contact:{vendor.vendorPhoneNumber}."
+    styles = getSampleStyleSheet()
+    notes_style = ParagraphStyle(name='NotesStyle', fontSize=10, leading=12)
+    notes_paragraph = Paragraph(f'<b>{notes_title}</b><br/>{notes_content}', style=notes_style)
+
+    notes_width, notes_height = notes_paragraph.wrap(width - 2 * margin, height)
+    y -= notes_height + 0.5 * inch  # Adjust y-coordinate to fit notes section
+    notes_paragraph.drawOn(c, margin, y)
+
+    # Stamp and Signature section
+    # Create a style for the stamp and signature section
+    stamp_signature_style = ParagraphStyle(name='StampSignatureStyle', fontSize=10, leading=12)
+
+    # Define content
+    stamp_signature_content = [
+        ["Authorized Signature: ____________________", "Stamp: ____________________"],
+        ["",vendor.vendorName]
+    ]
+
+    # Create Table for Stamp and Signature
+    stamp_signature_table = Table(stamp_signature_content, colWidths=[width / 2 - margin, width / 2 - margin])
+    stamp_signature_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ('TOPPADDING', (0, 0), (-1, -1), 12),
+    ]))
+
+    # Draw the stamp and signature table
+    stamp_signature_width, stamp_signature_height = stamp_signature_table.wrap(width - 2 * margin, height)
+    y -= stamp_signature_height + 0.5 * inch  # Adjust y-coordinate to fit stamp and signature section
+    stamp_signature_table.drawOn(c, margin, y)
+
+    # Draw a box around the entire content
+    content_top = height - 1.3 * inch
+    content_bottom = margin - .1 * inch
+    content_left = margin + -0.2 * inch  # Increased left margin
+    content_right = width - margin - -0.2 * inch  # Increased right margin
+
+    c.setStrokeColor(colors.black)
+    c.setLineWidth(1)
+    c.rect(content_left, content_bottom, content_right - content_left, content_top - content_bottom)
+
+    # Finalize the PDF
+    c.showPage()
+    c.save()
