@@ -26,14 +26,14 @@
     }
 
     h1 {
-    text-align: center;
-    color: white;
-    background-color: #333;
-    padding: 10px;
-    margin-top: 0;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
+        text-align: center;
+        color: white;
+        background-color: #333;
+        padding: 10px;
+        margin-top: 0;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
 
     .card-body {
         padding: 20px;
@@ -76,20 +76,27 @@
         background-color: #555;
     }
 
-    .error-message {
-        color: red;
-        font-size: 12px;
-        margin-top: 5px;
+    .message-popup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4caf50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: none;
+        z-index: 1000;
     }
 
+    .message-popup.error {
+        background-color: #f44336;
+    }
   
 </style>
-</head>
-<body>
+
 <div class="container">
-    
-        <h1>Add Product</h1>
-    
+    <h1>Add Product</h1>
     <div class="card-body">
         <form id="productForm" method="post" action="{% url 'addProduct' %}">
             {% csrf_token %}
@@ -97,7 +104,6 @@
                 <label for="productId">Product ID:</label>
                 <input type="text" id="productId" name="productId" required>
             </div>
-
             <div class="input-group">
                 <label for="productType">Product Type:</label>
                 <select id="productType" name="productType" required onchange="toggleFields()">
@@ -107,22 +113,18 @@
                     <option value="F-PROTEKKET">F-PROTEKKET</option>
                 </select>
             </div>
-
             <div id="descriptionFields" class="input-group hidden">
-                <label for="description">Description:</label>
+                <label for="description">Product Name:</label>
                 <input type="text" id="description" name="description">
             </div>
-
             <div id="countField" class="input-group hidden">
                 <label for="count">Count:</label>
                 <input type="number" id="count" name="count">
             </div>
-
             <div id="priceField" class="input-group hidden">
                 <label for="price">Price:</label>
                 <input type="text" id="price" name="price">
             </div>
-
             <div id="vaseOptions" class="input-group hidden">
                 <label for="vaseType">Vase Type:</label>
                 <select id="vaseType" name="vaseType" onchange="toggleVaseFields()">
@@ -134,11 +136,20 @@
                     <input type="number" id="vaseCountInput" name="vaseCountInput">
                 </div>
             </div>
-
+            <div class="input-group">
+                <label for="manufacturingdate">Manufacturing Date:</label>
+                <input type="date" id="manufacturingdate" name="manufacturingdate">
+            </div>
+            <div class="input-group">
+                <label for="expiringdate">Expiring Date:</label>
+                <input type="date" id="expiringdate" name="expiringdate">
+            </div>
             <button type="submit" class="btn-submit">Add Product</button>
         </form>
     </div>
 </div>
+
+<div id="message-popup" class="message-popup"></div>
 
 <script>
     function toggleFields() {
@@ -214,13 +225,16 @@
         })
         .then(data => {
             console.log('Success:', data);
-            // Handle success response here (e.g., show success message, redirect)
-            // Example:
-            // window.location.href = '/success-page/';
+            showPopupMessage(data.message, data.success); // Show the popup message
+
+            // Reload the page to clear form fields and reset state
+            setTimeout(function() {
+                window.location.reload();
+            }, 2000); // Adjust the delay as needed
         })
         .catch(error => {
             console.error('Error:', error);
-            // Handle error (e.g., show error message to user)
+            showPopupMessage('An error occurred while adding the product.', false); // Show error message
         });
     });
 
@@ -240,7 +254,35 @@
         }
         return cookieValue;
     }
-</script>
-</body>
 
+    function showPopupMessage(message, success) {
+        const messagePopup = document.getElementById("message-popup");
+        messagePopup.innerHTML = message;
+        if (success) {
+            messagePopup.classList.remove('error');
+        } else {
+            messagePopup.classList.add('error');
+        }
+        messagePopup.style.display = 'block';
+        setTimeout(function() {
+            messagePopup.style.display = 'none';
+        }, 5000);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const messagePopup = document.getElementById("message-popup");
+        
+        {% if messages %}
+            let messages = "";
+            {% for message in messages %}
+                messages += "{{ message }}<br>";
+            {% endfor %}
+            messagePopup.innerHTML = messages;
+            messagePopup.style.display = 'block';
+            setTimeout(function() {
+                messagePopup.style.display = 'none';
+            }, 5000);
+        {% endif %}
+    });
+</script>
 {% endblock %}

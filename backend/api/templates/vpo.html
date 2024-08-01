@@ -173,7 +173,7 @@ h1 {
 
 </style>
 <div class="container">
-<h1>VPO List</h1>
+<h1>Vendor Purchase Order</h1>
 
 <!-- <div class="container"> -->
     <form method="post" id="vpo-form">
@@ -201,10 +201,10 @@ h1 {
                     <input type="number" name="serial_num" class="serial_num" required>
                 </div>
                 
-                <div>
-                    <label for="UOM">Unit of Measure:</label>
-                    <input type="text" name="UOM" class="UOM" required>
-                </div>
+                    <!-- <div>
+                        <label for="UOM">Unit of Measure:</label>
+                        <input type="text" name="UOM" class="UOM" required>
+                    </div> -->
                 <div>
                     <label for="QTY">Quantity:</label>
                     <input type="number" name="QTY" class="QTY" oninput="updateTotal(this)" required>
@@ -345,7 +345,7 @@ h1 {
         // Clear other fields if needed
         newRow.querySelector('.product').value = '';
         newRow.querySelector('.product').dispatchEvent(new Event('change'));
-        newRow.querySelector('.UOM').value = '';
+        // newRow.querySelector('.UOM').value = '';
         newRow.querySelector('.QTY').value = '';
         newRow.querySelector('.Rate').value = '';
         newRow.querySelector('.total').value = '';

@@ -133,6 +133,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     vase_type = models.CharField(max_length=10, blank=True, null=True)
     vase_count = models.IntegerField(blank=True, null=True)
+    manufacturing_date = models.DateField(blank=True, null=True)
+    expiring_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return self.product_id  # Display product_id in admin and Django admin
@@ -148,7 +150,7 @@ class VPO(models.Model):
     invoice_number = models.CharField(max_length=20,  blank=True)
     serial_num = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    uom = models.CharField(max_length=50)
+    # uom = models.CharField(max_length=50)
     qty = models.IntegerField(default=0)
     rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)

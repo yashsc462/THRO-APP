@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login,logout as auth_logout
 from django.contrib.auth.models import User  
 from django.http import HttpResponse,JsonResponse
 from .models import Vendor,Customer,Company,Product,VPO
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -177,33 +178,75 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from .models import Product
 
-def addProduct(request):
+
+####################################################################################################################
+# def addProduct(request):
+#     if request.method == 'POST':
+#         product_id = request.POST.get('productId')
+#         product_type = request.POST.get('productType')
+#         description = request.POST.get('description')
+#         count = request.POST.get('count')
+#         price = request.POST.get('price')
+#         vase_type = request.POST.get('vaseType')
+#         vase_count = request.POST.get('vaseCountInput')
+
+#         # Create a new Product object and save to database
+#         product = Product(
+#             product_id=product_id,
+#             product_type=product_type,
+#             description=description,
+#             count=count,
+#             price=price,
+#             vase_type=vase_type,
+#             vase_count=vase_count
+#         )
+#         product.save()
+
+#         # Redirect to a success page or wherever you want
+#         return redirect('addProduct')  # Replace 'success_page' with your actual URL name
+
+#     # Render the form initially or on GET request
+#     return render(request, 'addProduct.html')
+
+
+@csrf_exempt
+def add_product(request):
     if request.method == 'POST':
-        product_id = request.POST.get('productId')
-        product_type = request.POST.get('productType')
-        description = request.POST.get('description')
-        count = request.POST.get('count')
-        price = request.POST.get('price')
-        vase_type = request.POST.get('vaseType')
-        vase_count = request.POST.get('vaseCountInput')
+        try:
+            product_id = request.POST.get('productId')
+            product_type = request.POST.get('productType')
+            description = request.POST.get('description', '')
+            count = request.POST.get('count', 0)
+            price = request.POST.get('price', 0.0)
+            vase_type = request.POST.get('vaseType', 'no')
+            vase_count = request.POST.get('vaseCountInput', 0)
+            manufacturing_date = request.POST.get('manufacturing_date')
+            expiring_date = request.POST.get('expiring_date') 
 
-        # Create a new Product object and save to database
-        product = Product(
-            product_id=product_id,
-            product_type=product_type,
-            description=description,
-            count=count,
-            price=price,
-            vase_type=vase_type,
-            vase_count=vase_count
-        )
-        product.save()
 
-        # Redirect to a success page or wherever you want
-        return redirect('addProduct')  # Replace 'success_page' with your actual URL name
+            if not product_id or not product_type:
+                raise ValueError('Product ID and Product Type are required.')
 
-    # Render the form initially or on GET request
-    return render(request, 'addProduct.html')
+            # Your logic to save the product
+            Product.objects.create(
+                product_id=product_id,
+                product_type=product_type,
+                description=description,
+                count=count,
+                price=price,
+                vase_type=vase_type,
+                vase_count=vase_count,
+                manufacturing_date=manufacturing_date,
+                expiring_date=expiring_date
+            )
+            return JsonResponse({'success': True, 'message': 'Product added successfully.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    
+    return render(request, 'addproduct.html')
+
+#yashaddproduct code changes
+########################################################################################################################
 
 
 # def vpo(request):
@@ -286,7 +329,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from datetime import datetime
 
-def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, discount, transportation, total_taxable_amount, gst, total_amount, invoice_number):
+def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, qtys, rates, totals, discount, transportation, total_taxable_amount, gst, total_amount, invoice_number):
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
     margin = inch
@@ -353,7 +396,7 @@ def generate_vpo_pdf(buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates
         row = [
             serial_nums[i],
             product.description,
-            UOMs[i],
+            # UOMs[i],
             str(qtys[i]),
             str(rates[i]),
             str(totals[i])
@@ -505,7 +548,7 @@ def vpo(request):
         vendor_id = request.POST.get('vendor')
         serial_nums = request.POST.getlist('serial_num')
         product_ids = request.POST.getlist('product')
-        UOMs = request.POST.getlist('UOM')
+        # UOMs = request.POST.getlist('UOM')
         qtys = request.POST.getlist('QTY')
         rates = request.POST.getlist('Rate')
         totals = request.POST.getlist('total')
@@ -529,7 +572,7 @@ def vpo(request):
                 vendor=vendor,
                 serial_num=serial_nums[i],
                 product=product,
-                uom=UOMs[i],
+                # uom=UOMs[i],
                 qty=qtys[i],
                 rate=rates[i],
                 total=totals[i],
@@ -550,7 +593,7 @@ def vpo(request):
         # Generate PDF
         buffer = BytesIO()
         generate_vpo_pdf(
-            buffer, vendor, serial_nums, product_ids, UOMs, qtys, rates, totals, 
+            buffer, vendor, serial_nums, product_ids, qtys, rates, totals, 
             discount, transportation, total_taxable_amount, gst, total_amount, invoice_number
             # Add more fields as needed
         )

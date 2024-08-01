@@ -70,6 +70,7 @@
                 <th>City</th>
                 <th>State</th>
                 <th>Pincode</th>
+                <th>Add Purchase Order</th>
             </tr>
         </thead>
         <tbody>
@@ -82,6 +83,9 @@
                 <td>{{ vendor.city }}</td>
                 <td>{{ vendor.state }}</td>
                 <td>{{ vendor.pincode }}</td>
+                <td>
+                    <a href="{{ PO.html }}" class="btn btn-primary" target="_blank">Add Purchase Order</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
