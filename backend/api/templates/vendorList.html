@@ -84,7 +84,7 @@
                 <td>{{ vendor.state }}</td>
                 <td>{{ vendor.pincode }}</td>
                 <td>
-                    <a href="{{ PO.html }}" class="btn btn-primary" target="_blank">Add Purchase Order</a>
+                    <a href="{% url 'vpo' %}" class="btn btn-primary" target="_blank">Add Purchase Order</a>
                 </td>
             </tr>
             {% endfor %}

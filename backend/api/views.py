@@ -249,6 +249,15 @@ def add_product(request):
 ########################################################################################################################
 
 
+def vpo_view(request):
+    products = Product.objects.all()  # Adjust based on your model
+    vendors = Vendor.objects.all()  # Adjust based on your model
+
+    return render(request, 'vpo.html', {
+        'products': products,
+        'vendors': vendors,
+    })
+
 # def vpo(request):
 #     if request.method == 'POST':
 #         # Retrieve form data from POST request

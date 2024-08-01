@@ -93,6 +93,15 @@
         background-color: #f44336;
     }
   
+    .input-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .input-row .input-group {
+        flex: 1;
+    }
 </style>
 
 <div class="container">
@@ -100,18 +109,20 @@
     <div class="card-body">
         <form id="productForm" method="post" action="{% url 'addProduct' %}">
             {% csrf_token %}
-            <div class="input-group">
-                <label for="productId">Product ID:</label>
-                <input type="text" id="productId" name="productId" required>
-            </div>
-            <div class="input-group">
-                <label for="productType">Product Type:</label>
-                <select id="productType" name="productType" required onchange="toggleFields()">
-                    <option value="">Select Product Type</option>
-                    <option value="THRO">THRO</option>
-                    <option value="VASE">VASE</option>
-                    <option value="F-PROTEKKET">F-PROTEKKET</option>
-                </select>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="productId">Product ID:</label>
+                    <input type="text" id="productId" name="productId" required>
+                </div>
+                <div class="input-group">
+                    <label for="productType">Product Type:</label>
+                    <select id="productType" name="productType" required onchange="toggleFields()">
+                        <option value="">Select Product Type</option>
+                        <option value="THRO">THRO</option>
+                        <option value="VASE">VASE</option>
+                        <option value="F-PROTEKKET">F-PROTEKKET</option>
+                    </select>
+                </div>
             </div>
             <div id="descriptionFields" class="input-group hidden">
                 <label for="description">Product Name:</label>
@@ -136,13 +147,15 @@
                     <input type="number" id="vaseCountInput" name="vaseCountInput">
                 </div>
             </div>
-            <div class="input-group">
-                <label for="manufacturingdate">Manufacturing Date:</label>
-                <input type="date" id="manufacturingdate" name="manufacturingdate">
-            </div>
-            <div class="input-group">
-                <label for="expiringdate">Expiring Date:</label>
-                <input type="date" id="expiringdate" name="expiringdate">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="manufacturingdate">Manufacturing Date:</label>
+                    <input type="date" id="manufacturingdate" name="manufacturingdate">
+                </div>
+                <div class="input-group">
+                    <label for="expiringdate">Expiring Date:</label>
+                    <input type="date" id="expiringdate" name="expiringdate">
+                </div>
             </div>
             <button type="submit" class="btn-submit">Add Product</button>
         </form>

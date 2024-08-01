@@ -15,14 +15,14 @@ body {
 
 /* Form Container */
 .container {
-        max-width: 95%;
-        margin: 20px auto; /* Center align and add spacing */
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin-top: 0%; 
-    }
+    max-width: 95%;
+    margin: 20px auto; /* Center align and add spacing */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 0%;
+}
 
 /* Form Elements */
 label {
@@ -57,11 +57,12 @@ button {
     font-size: 16px;
     transition: background-color 0.3s ease;
     margin-left: 47%;
-    margin-top:10px ;
+    margin-top: 10px;
 }
 
+
 button:hover {
-    background-color: #0056b3;
+    background-color: #4c554e;
 }
 
 button:focus {
@@ -72,7 +73,7 @@ button:focus {
 .product-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 20px; /* Increase the gap for more spacing */
     margin-bottom: 15px;
     padding: 10px;
     border: 1px solid #ddd;
@@ -82,7 +83,7 @@ button:focus {
 
 /* Field Styling for Side-by-Side Layout */
 .product-row > div {
-    flex: 1 1 calc(16.66% - 10px); /* 6 columns layout */
+    flex: 1 1 calc(16.66% - 20px); /* 6 columns layout with increased gap */
     box-sizing: border-box;
 }
 
@@ -109,7 +110,7 @@ button.add-row {
 }
 
 button.add-row:hover {
-    background-color: #218838;
+    background-color: #4c554e;
 }
 
 /* Summary Section */
@@ -142,12 +143,11 @@ input#gst {
     cursor: not-allowed;
 }
 
-
 .remove-row {
     cursor: pointer;
     color: #dc3545; /* Use red for remove actions */
     font-weight: bold;
-    padding: 10px 20px; /* Increase padding for larger size */
+    padding: 30px 40px; /* Increase padding for larger size */
     border: none;
     background-color: transparent;
     transition: transform 0.2s ease-in-out; /* Add transition for smooth scaling */
@@ -168,10 +168,9 @@ h1 {
     margin-top: 0;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    
-    }
-
+}
 </style>
+
 <div class="container">
 <h1>Vendor Purchase Order</h1>
 
@@ -200,11 +199,6 @@ h1 {
                     <label for="serial_num">Serial Number:</label>
                     <input type="number" name="serial_num" class="serial_num" required>
                 </div>
-                
-                    <!-- <div>
-                        <label for="UOM">Unit of Measure:</label>
-                        <input type="text" name="UOM" class="UOM" required>
-                    </div> -->
                 <div>
                     <label for="QTY">Quantity:</label>
                     <input type="number" name="QTY" class="QTY" oninput="updateTotal(this)" required>
@@ -216,14 +210,11 @@ h1 {
                 <div>
                     <label for="total">Total:</label>
                     <input type="number" name="total" class="total" readonly>
+                </div>
+                <div>
                     <button type="button" class="btn remove-row" onclick="removeRow(this)">
                         <i class="fas fa-trash-alt"></i>
                     </button>
-                </div>
-                <div>
-                    <!-- <button type="button" class="btn remove-row" onclick="removeRow(this)">
-                        <i class="fas fa-trash-alt"></i>
-                    </button> -->
                 </div>
             </div>
         </div>
@@ -245,144 +236,104 @@ h1 {
     
             <label for="total_amount">Total Amount:</label>
             <input type="number" name="total_amount" id="total_amount" readonly>
-    
-            {% comment %} <label for="delivery_address">Delivery Address:</label>
-            <input type="text" name="delivery_address" id="total_taxadelivery_addressble_amount" >
-    
-            <label for="delivery_city">City:</label>
-            <input type="text" name="delivery_city" id="delivery_city" >
-    
-            <label for="delivery_state">State:</label>
-            <input type="text" name="delivery_state" id="delivery_state" >
-    
-            <label for="delivery_contact">Contact:</label>
-            <input type="text" name="delivery_contact" id="delivery_contact" >
-    
-            <label for="bank_name">Bank Name:</label>
-            <input type="text" name="bank_name" id="bank_name" >
-    
-            <label for="account_number">Account Number:</label>
-            <input type="number" name="account_number" id="account_number" >
-    
-            <label for="bank_ifsc">Account Number:</label>
-            <input type="text" name="bank_ifsc" id="bank_ifsc" > {% endcomment %}
         </div>
     
         <button type="submit">Create VPO</button>
     </form>
 </div>
-</div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSerialNumbers();
+});
 
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeSerialNumbers();
+function initializeSerialNumbers() {
+    var rows = document.querySelectorAll('.product-row');
+    rows.forEach(function(row, index) {
+        var serialNumInput = row.querySelector('.serial_num');
+        serialNumInput.value = index + 1;
     });
-    
-    function initializeSerialNumbers() {
-        var rows = document.querySelectorAll('.product-row');
-        rows.forEach(function(row, index) {
-            var serialNumInput = row.querySelector('.serial_num');
-            serialNumInput.value = index + 1;
-        });
+}
+
+function updateRate(selectElement) {
+    var price = selectElement.options[selectElement.selectedIndex].dataset.price;
+    var row = selectElement.closest('.product-row');
+    var rateInput = row.querySelector('.Rate');
+    rateInput.value = price;
+    updateTotal(row.querySelector('.QTY'));
+}
+
+function removeRow(button) {
+    var row = button.closest('.product-row');
+    var container = document.getElementById('product-rows');
+
+    // Check if there is only one row left
+    if (container.children.length > 1) {
+        container.removeChild(row);
+        updateSerialNumbers();
+        updateSummary(); // Update summary after removing the row
+    } else {
+        alert("Cannot remove the only row.");
     }
-    
-    function updateRate(selectElement) {
-        var price = selectElement.options[selectElement.selectedIndex].dataset.price;
-        var row = selectElement.closest('.product-row');
-        var rateInput = row.querySelector('.Rate');
-        rateInput.value = price;
-        updateTotal(row.querySelector('.QTY'));
-    }
+}
 
+// Function to update serial numbers after removing a row
+function updateSerialNumbers() {
+    var rows = document.querySelectorAll('.product-row');
+    rows.forEach(function(row, index) {
+        row.querySelector('.serial_num').value = index + 1;
+    });
+}
 
-    function removeRow(button) {
-        var row = button.closest('.product-row');
-        var container = document.getElementById('product-rows');
-    
-        // Check if there is only one row left
-        if (container.children.length > 1) {
-            container.removeChild(row);
-            updateSerialNumbers();
-            updateSummary(); // Update summary after removing the row
-        } else {
-            alert("Cannot remove the only row.");
-        }
-    }
-    
-    // Function to update serial numbers after removing a row
-    function updateSerialNumbers() {
-        var rows = document.querySelectorAll('.product-row');
-        rows.forEach(function(row, index) {
-            row.querySelector('.serial_num').value = index + 1;
-        });
-    }
-    
-    
-    
+function updateTotal(quantityInput) {
+    var row = quantityInput.closest('.product-row');
+    var rate = parseFloat(row.querySelector('.Rate').value) || 0;
+    var quantity = parseFloat(quantityInput.value) || 0;
+    var total = rate * quantity;
+    row.querySelector('.total').value = total;
+    updateSummary();
+}
 
-    function updateTotal(quantityInput) {
-        var row = quantityInput.closest('.product-row');
-        var rate = parseFloat(row.querySelector('.Rate').value) || 0;
-        var quantity = parseFloat(quantityInput.value) || 0;
-        var total = rate * quantity;
-        row.querySelector('.total').value = total;
-        updateSummary();
-    }
+function addRow() {
+    var container = document.getElementById('product-rows');
+    var rows = container.querySelectorAll('.product-row');
+    var newRow = rows[0].cloneNode(true); // Clone the first row or any existing row
 
-    function addRow() {
-        var container = document.getElementById('product-rows');
-        var rows = container.querySelectorAll('.product-row');
-        var newRow = rows[0].cloneNode(true); // Clone the first row or any existing row
-    
-        // Calculate the next serial number
-        var nextSerialNum = rows.length + 1;
-    
-        // Update the serial number field
-        newRow.querySelector('.serial_num').value = nextSerialNum;
-    
-        // Clear other fields if needed
-        newRow.querySelector('.product').value = '';
-        newRow.querySelector('.product').dispatchEvent(new Event('change'));
-        // newRow.querySelector('.UOM').value = '';
-        newRow.querySelector('.QTY').value = '';
-        newRow.querySelector('.Rate').value = '';
-        newRow.querySelector('.total').value = '';
-    
-        container.appendChild(newRow);
-    }
-    
+    // Calculate the next serial number
+    var nextSerialNum = rows.length + 1;
 
-    function updateSummary() {
-        var rows = document.querySelectorAll('.product-row');
-        var totalTaxableAmount = 0;
+    // Update the serial number field
+    newRow.querySelector('.serial_num').value = nextSerialNum;
 
-        rows.forEach(function(row) {
-            var total = parseFloat(row.querySelector('.total').value) || 0;
-            totalTaxableAmount += total;
-        });
-
-        var discount = parseFloat(document.getElementById('discount').value) || 0;
-        var transportation = parseFloat(document.getElementById('transportation').value) || 0;
-        var gst = 18;  // Hardcoded GST value
-
-        // Calculate total taxable amount
-        var discountAmount = totalTaxableAmount * (discount / 100);
-        var taxableAmount = totalTaxableAmount - discountAmount + transportation;
-        document.getElementById('total_taxable_amount').value = taxableAmount.toFixed(2);
-
-        // Calculate total amount
-        var gstAmount = taxableAmount * (gst / 100);
-        var totalAmount = taxableAmount + gstAmount;
-        document.getElementById('total_amount').value = totalAmount.toFixed(2);
-    }
-
-    document.getElementById('vpo-form').addEventListener('input', function(event) {
-        if (event.target.matches('.QTY, .product, #discount, #transportation')) {
-            updateSummary();
+    // Clear the input values in the cloned row
+    newRow.querySelectorAll('input').forEach(function(input) {
+        if (input.type !== 'button' && input.type !== 'hidden' && !input.hasAttribute('readonly')) {
+            input.value = '';
         }
     });
+
+    newRow.querySelector('select').selectedIndex = 0; // Reset the select dropdown
+
+    container.appendChild(newRow);
+}
+
+function updateSummary() {
+    var totalTaxableAmount = 0;
+    document.querySelectorAll('.total').forEach(function(totalInput) {
+        totalTaxableAmount += parseFloat(totalInput.value) || 0;
+    });
+    var discount = parseFloat(document.getElementById('discount').value) || 0;
+    var transportation = parseFloat(document.getElementById('transportation').value) || 0;
+    var gst = parseFloat(document.getElementById('gst').value) || 0;
+
+    var taxableAmount = totalTaxableAmount - discount + transportation;
+    document.getElementById('total_taxable_amount').value = taxableAmount;
+    var totalAmount = taxableAmount + (taxableAmount * gst / 100);
+    document.getElementById('total_amount').value = totalAmount;
+}
+
+document.getElementById('discount').addEventListener('input', updateSummary);
+document.getElementById('transportation').addEventListener('input', updateSummary);
 </script>
 
-{% endblock %}
+{% endblock content %}
